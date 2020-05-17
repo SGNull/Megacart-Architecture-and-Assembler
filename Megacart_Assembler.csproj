@@ -1,0 +1,131 @@
+﻿<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
+    <ProjectGuid>{B3C12901-A6CD-49DB-BDB2-A2D03DAB1C4D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <NoStandardLibraries>false</NoStandardLibraries>
+    <AssemblyName>ConsoleApplication</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RootNamespace>Megacart_Assembler</RootNamespace>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="LookupTable.cs" />
+    <Compile Include="Main.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".git\COMMIT_EDITMSG" />
+    <None Include=".git\config" />
+    <None Include=".git\description" />
+    <None Include=".git\FETCH_HEAD" />
+    <None Include=".git\HEAD" />
+    <None Include=".git\hooks\applypatch-msg.sample" />
+    <None Include=".git\hooks\commit-msg.sample" />
+    <None Include=".git\hooks\fsmonitor-watchman.sample" />
+    <None Include=".git\hooks\post-update.sample" />
+    <None Include=".git\hooks\pre-applypatch.sample" />
+    <None Include=".git\hooks\pre-commit.sample" />
+    <None Include=".git\hooks\pre-merge-commit.sample" />
+    <None Include=".git\hooks\pre-push.sample" />
+    <None Include=".git\hooks\pre-rebase.sample" />
+    <None Include=".git\hooks\pre-receive.sample" />
+    <None Include=".git\hooks\prepare-commit-msg.sample" />
+    <None Include=".git\hooks\update.sample" />
+    <None Include=".git\index" />
+    <None Include=".git\info\exclude" />
+    <None Include=".git\logs\HEAD" />
+    <None Include=".git\logs\refs\heads\master" />
+    <None Include=".git\logs\refs\remotes\origin\HEAD" />
+    <None Include=".git\logs\refs\remotes\origin\master" />
+    <None Include=".git\objects\07\21ab7b78bf79bdb6abeea478136528d2aff9ed" />
+    <None Include=".git\objects\09\bda34c8b38b02fdc784b59a9c51072b6293349" />
+    <None Include=".git\objects\28\4fb4c5082b1866c72a932997e1a9608f4e3f32" />
+    <None Include=".git\objects\3b\40a331075cf6206818e1a9cffbd14541eef40e" />
+    <None Include=".git\objects\41\398d8fed7056f4498b4df93ffef1acebc2f609" />
+    <None Include=".git\objects\44\a327fe8fc995982c7bd4601e46864be8acf6d4" />
+    <None Include=".git\objects\4a\2f879eda168252d0b5217696a626e140daf5d4" />
+    <None Include=".git\objects\5a\844937bc45efc91218e681d2ee97a192546a29" />
+    <None Include=".git\objects\5f\8b5004d153bb549ad9057d4deeb9869ce010bd" />
+    <None Include=".git\objects\62\03adedb5ee2736d6a9dafd85b33199c7978991" />
+    <None Include=".git\objects\6a\24cca6faac39f7a397b06237b389fcc928bb32" />
+    <None Include=".git\objects\6c\632da6d1ea1a90b8cb583e4b4bdfa36a9e5eea" />
+    <None Include=".git\objects\72\0efca92039409d61ec9407942492f5ce932a22" />
+    <None Include=".git\objects\72\3191b26ee49578c2fb50fcfbfd40b5a195396b" />
+    <None Include=".git\objects\73\096331f83c650195a2c6ceae31f21a7df00a7f" />
+    <None Include=".git\objects\73\0ddacc12ad35b29a497983abb6bbda10974531" />
+    <None Include=".git\objects\81\18ff7c735fd476c0c2608d0d516a4544c29ea2" />
+    <None Include=".git\objects\82\1f795d147a4b9b6a2316245644b0d2329f6f15" />
+    <None Include=".git\objects\92\dcaa4dd24fa21e73d4c6e4fcfb5830141e6756" />
+    <None Include=".git\objects\94\fd01b9dafb68f5da17790f613da23ddc2fde41" />
+    <None Include=".git\objects\96\7e4f5f44e30f38e50b9fa23f4892bd68b5d95f" />
+    <None Include=".git\objects\97\29a9e0c30f928df0ac75116e24ba457411652e" />
+    <None Include=".git\objects\98\5fa627370ad146b7edcf95d3487f9dfe44011a" />
+    <None Include=".git\objects\a2\ab9b5f1404827fc2bb04bdda54d758e157f28a" />
+    <None Include=".git\objects\a4\ef2f6f376fc5d29ef4dc463cf3d9b86a6592cc" />
+    <None Include=".git\objects\bb\199834a28819657e3e5015a7b8b1a599fbf06a" />
+    <None Include=".git\objects\bd\5b6971f8c2fb5dcc3d2bf8e4f4fddfc3128b49" />
+    <None Include=".git\objects\c0\2946faf7f41ccbeca164be0f92e85a45e22bc7" />
+    <None Include=".git\objects\e8\9a8fa1dc3e9d1e84856508db996d6eb01da687" />
+    <None Include=".git\objects\ed\5012b71c067dcd74fae00ce24b8a021ce54ca9" />
+    <None Include=".git\objects\f1\7fe187ea687ea3db7d08cbf19106033a4a4990" />
+    <None Include=".git\objects\fa\90de26d19eb14c99746c99d7d32ae999f36b57" />
+    <None Include=".git\objects\fb\d27f24cf30e57c1dfa3540389c033e82794a04" />
+    <None Include=".git\objects\fe\d86bed161de0a042d7f6efe896b422e6299aad" />
+    <None Include=".git\ORIG_HEAD" />
+    <None Include=".git\packed-refs" />
+    <None Include=".git\refs\heads\master" />
+    <None Include=".git\refs\remotes\origin\HEAD" />
+    <None Include=".git\refs\remotes\origin\master" />
+    <None Include=".vs\Megacart_Architecture_Assembler\DesignTimeBuild\.dtbcache.v2" />
+    <None Include=".vs\Megacart_Architecture_Assembler\v16\.suo" />
+    <None Include=".vs\ProjectSettings.json" />
+    <None Include=".vs\slnx.sqlite" />
+    <None Include=".vs\VSWorkspaceState.json" />
+    <None Include="README.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include=".git\ms-persist.xml" />
+    <Content Include="TestFile.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include=".git\objects\info\" />
+    <Folder Include=".git\objects\pack\" />
+    <Folder Include=".git\refs\tags\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
+  <ProjectExtensions>
+    <VisualStudio AllowExistingFolder="true" />
+  </ProjectExtensions>
+</Project>

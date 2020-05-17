@@ -1,18 +1,16 @@
 ﻿using System;
 using System.IO;
 
-
-
 public class Main
 {
     public int programCounter = 0;
     public string fileLocation = "TestFile.txt";
 
-    public Main()
+    public Main(String[] args)
     { 
         if (File.Exists(fileLocation))
         {
-            text = File.ReadAllLines(fileLocation);
+            string[] text = File.ReadAllLines(fileLocation);
             foreach (string line in text)
             {
                 Console.WriteLine(line);
@@ -22,53 +20,54 @@ public class Main
         }
 	}
 
-    public ParseStringForLabels()
+    public void ParseStringForLabels()
     {
 
     }
 
-    public ParseString()
+    public void ParseString()
     {
 
     }
 
-    public ParseLine1()
+    public string ParseLine1()
     {
-        
+        return null;
     }
 
-    public ParseInstruction()
+    public string ParseInstruction()
     {
-
+        return null;
     }
 
-    public ParseALUOpcode()
+    public string ParseALUOpcode()
     {
-
+        return null;
     }
 
-    public ParseJumpLocation()
+    public string ParseJumpLocation()
     {
         //This is important: The assembler should support labels for jumping.
+        return null;
     }
 
-    public ParseRead()
+    public string ParseRead()
     {
-
+        return null;
     }
 
-    public ParseWrite()
+    public string ParseWrite()
     {
-
+        return null;
     }
 
-    public ParseCondition()
+    public string ParseCondition()
     {
-
+        return null;
     }
 
-    public ParseMemoryAddress()
+    public string ParseMemoryAddress()
     {
-
+        return null;
     }
 }
