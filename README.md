@@ -36,3 +36,5 @@ By format, I mean that which the program should expect to see after the instruct
 As a result, I think it should pull the instruction's value from the table, and then have a seperate thing for the format.
 
 If we see a blank line, we discard it and do nothing.
+
+Test Commit
