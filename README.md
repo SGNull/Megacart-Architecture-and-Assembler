@@ -2,6 +2,7 @@
 An assembler for my Megacart Architecture's instruction set.
 
 This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. The process went something like this:
+
 Initial Documentation > Hardware Development > Refine Documentation > Hardware Integration > Further Refine Documentation > Phase 1 Testing > Phase 2 Testing > Phase 3 Testing > Finalization
 
 Currently I am at phase 3 testing. The way I've defined the testing phases is as such:
