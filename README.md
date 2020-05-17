@@ -14,7 +14,7 @@ Right now I have to do all the assembling by myself. This means painstakingly go
 So, I've decided to try my hand at building an assembler for it. Recently I just got done with a software engineering class, and a class about languages and automata, so hopefully this turns out OK.
 
 ## Functionality Plans:
-##### We do two passes on the file.
+#### We do two passes on the file.
 
 The first pass is to check for labels.
 There are two types of labels.
@@ -27,7 +27,7 @@ If it sees something unexpected, it spits out some error
 If it sees an empty line, or a line starting with : or D6, it ignores it.
 It also ignores spaces in lines
 
-##### Parts of strings can work two ways.
+#### Parts of strings can work two ways.
 
 First, if it contains binary, then we can skip parsing.
 Second, if it contains a mneumonic, then we check the correct table for that mneumonic.
