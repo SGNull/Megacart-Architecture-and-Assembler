@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections.Generic;
+using Megacart_Assembler;
 
 public class LookupTable
 {
-	private ArrayList Table = new ArrayList();
+	private List<TableEntry> Table = new List<TableEntry>();
 
 	public LookupTable()
-	{
-	}
+    {
+
+    }
 }

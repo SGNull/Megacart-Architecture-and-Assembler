@@ -34,40 +34,4 @@ public class Main
     {
         return null;
     }
-
-    public string ParseInstruction()
-    {
-        return null;
-    }
-
-    public string ParseALUOpcode()
-    {
-        return null;
-    }
-
-    public string ParseJumpLocation()
-    {
-        //This is important: The assembler should support labels for jumping.
-        return null;
-    }
-
-    public string ParseRead()
-    {
-        return null;
-    }
-
-    public string ParseWrite()
-    {
-        return null;
-    }
-
-    public string ParseCondition()
-    {
-        return null;
-    }
-
-    public string ParseMemoryAddress()
-    {
-        return null;
-    }
 }

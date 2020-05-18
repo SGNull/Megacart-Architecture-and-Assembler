@@ -37,4 +37,9 @@ As a result, I think it should pull the instruction's value from the table, and 
 
 If we see a blank line, we discard it and do nothing.
 
-Test Commit
+## Types of Mneumonics:
+* Instructions
+* ALU Operations
+* Labels
+* Internal Addresses
+* Conditions
