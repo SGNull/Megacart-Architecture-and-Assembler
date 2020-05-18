@@ -1,0 +1,6 @@
+C:\Users\Devin\source\repos\Megacart_Architecture_Assembler\obj\x86\Debug\Megacart_Assembler.csprojAssemblyReference.cache
+C:\Users\Devin\source\repos\Megacart_Architecture_Assembler\obj\x86\Debug\Megacart_Assembler.csproj.CoreCompileInputs.cache
+C:\Users\Devin\source\repos\Megacart_Architecture_Assembler\bin\Debug\ConsoleApplication.exe
+C:\Users\Devin\source\repos\Megacart_Architecture_Assembler\bin\Debug\ConsoleApplication.pdb
+C:\Users\Devin\source\repos\Megacart_Architecture_Assembler\obj\x86\Debug\ConsoleApplication.exe
+C:\Users\Devin\source\repos\Megacart_Architecture_Assembler\obj\x86\Debug\ConsoleApplication.pdb
