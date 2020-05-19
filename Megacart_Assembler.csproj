@@ -42,7 +42,6 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CustomBinary.cs" />
     <Compile Include="TableEntry.cs" />
     <Compile Include="LookupTable.cs" />
     <Compile Include="Assembler.cs" />
