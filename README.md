@@ -51,3 +51,35 @@ If we see a blank line, we discard it and do nothing.
 * Labels
 * Internal Addresses
 * Conditions
+
+## Architecture Details:
+I created the components from scratch. Some of the designs I borrowed or were influenced by others, and they'll be credited when the build is done.
+* 6-bit CPU.
+* 8 instructions.
+* 4 two-line instructions, which take 3 clock cycles.
+* 4 one-line instructions, which take 2 clock cycles.
+* Acc, or the A register, cannot be written directly to. It must be written to from an ALU operation.
+* The temp register, or the B register, can be directly written to.
+* Unknown cycle speed. This is part of finalization.
+* Instructions: Conditional halt, conditional jump, read/write from memory, read/write from temp/B, read from acc/A, ALU operation.
+
+#### Instruction Format:
+
+IsTwoLine?[1-bit] Instruction[2-bit] Operand[3-bit] | OptionalSecondLine[6-bit]
+
+#### ALU operations are performed a bit wierdly.
+First you have to select the ALU instruction (111), then tell it where you want the result to go to in the next 3 bits. Then, the second line contains the opcode, but it's not a normal opcode. The bottom 4-bits of this opcode is the actual code that gets fed into the ALU Decoder to generate the control signals for the ALU. The top two bits control whether A/B is inverted respectively. I chose to do this, because it provided the maximum amount of instructions to the user, without requiring a giant 6-bit decoder.
+
+#### The components:
+
+CPU - Contains A and B registers, and the ALU.
+
+Tier 2 Controller - Takes the operand and converts it into whatever signals the instruction needs.
+
+ALU Decoder - Takes the code part of the opcode and converts it into control signals for the ALU.
+
+Fetch Registers - Stores the instructions to be executed.
+
+Tier 1 Controller - The main logic of the computer. Contains the state counter, and generates all of the high-level control signals. Is responsible for fetching and executing.
+
+IO - The input/output port of the computer. Has two sets of read/write signals, one coming from the computer, the other going to the computer.
