@@ -74,12 +74,12 @@ First you have to select the ALU instruction (111), then tell it where you want 
 
 CPU - Contains A and B registers, and the ALU.
 
-Tier 2 Controller - Takes the operand and converts it into whatever signals the instruction needs.
+Secondary Controller - Takes the operand and converts it into whatever signals the instruction needs.
 
 ALU Decoder - Takes the code part of the opcode and converts it into control signals for the ALU.
 
 Fetch Registers - Stores the instructions to be executed.
 
-Tier 1 Controller - The main logic of the computer. Contains the state counter, and generates all of the high-level control signals. Is responsible for fetching and executing.
+Primary Controller - The main logic of the computer. Contains the state counter, and generates all of the high-level control signals. Is responsible for fetching and executing.
 
 IO - The input/output port of the computer. Has two sets of read/write signals, one coming from the computer, the other going to the computer.
