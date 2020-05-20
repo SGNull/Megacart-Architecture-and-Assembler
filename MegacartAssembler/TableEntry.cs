@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace Megacart_Assembler
+namespace MegacartAssembler
 {
     class TableEntry
     {
@@ -50,6 +50,7 @@ namespace Megacart_Assembler
                 _value = newValue;
             }
         }
+
         public TableEntry(string keyword, string value)
         {
             this.IsLine = null;

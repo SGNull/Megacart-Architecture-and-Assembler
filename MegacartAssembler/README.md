@@ -27,6 +27,14 @@ If it sees something unexpected, it spits out some error.
 If it sees an empty line, or a line starting with : or D6, it ignores it.
 It also ignores spaces in lines.
 
+#### Variables work a bit differently though.
+Variables should be treated as labels to jump to. What will happen is:
+The first variable is stored in the label table as NAME 111111
+The next is stored as NAME 111110
+And so on, such that they all are stored at the end of memory. This requires no knowledge of how large the program will turn out to be.
+You could also have a global counter variable to store how many spots at the end of memory are variables.
+This would allow you to tell the user that their program is too long.
+
 #### Parts of strings can work two ways.
 
 First, if it contains binary, then we can skip parsing.

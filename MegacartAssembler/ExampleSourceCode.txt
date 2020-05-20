@@ -1,0 +1,21 @@
+﻿// Fibbonacci sequence generator program.
+// It stops before it sees an overflow.
+
+// Starts by setting A to 0, B to 1, and giving the IO these first two numbers.
+ALU A ZERO
+MFA B
+MFA IO
+ALU B INC
+
+//Here is the main loop. It goes back and forth, adding numbers.
+: LOOP
+MFB IO
+ALU A ADDS
+JIF CAR END
+
+MFA IO
+ALU B ADDS
+JIF NCAR LOOP
+
+//The end of the program
+: END
