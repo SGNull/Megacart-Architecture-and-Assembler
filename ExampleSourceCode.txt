@@ -7,7 +7,7 @@ MFA B
 MFA IO
 ALU B INC
 
-// Here is the main loop. It goes back and forth, adding numbers.
+// Here is the main loop. It goes back and forth, adding numbers. The ADDS operation is addition & store carry.
 : LOOP
 MFB IO
 ALU A ADDS
