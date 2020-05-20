@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Data;
-using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Text.RegularExpressions;
 using MegacartAssembler;
 
@@ -25,32 +21,70 @@ namespace MegacartAssembler
         public static string InternalAddressesFilePath = PathToUser + PathFromUser + "\\Mnemonics\\InternalAddresses.txt";
 
         public static LookupTable LabelTable;
-        public static LookupTable ALUOperationsTable;
-        public static LookupTable InstructionsTable;
-        public static LookupTable ConditionsTable;
-        public static LookupTable InternalAddressesTable;
+        public static LookupTable ALUOperationsTable = new LookupTable("ALU Operations");
+        public static LookupTable InstructionsTable = new LookupTable("Instructions");
+        public static LookupTable ConditionsTable = new LookupTable("Conditions");
+        public static LookupTable InternalAddressesTable = new LookupTable("Internal Addresses");
 
         public static void Main(String[] args)
         {
             if (File.Exists(TargetFilePath))
             {
-                PopulateTables();
+                PopulateMnemonicTables();
                 ParseFileForLabels();
                 ParseFile();
-                ApplyVariables(); //Variables get added to the end of the program as :NAME \n VALUE
+                ApplyVariables();
             }
         }
 
-        public static void PopulateTables()
+        public static void PopulateMnemonicTables()
         {
             LookupTable[] tables = new LookupTable[]
                 {ALUOperationsTable, InstructionsTable, ConditionsTable, InternalAddressesTable};
             string[] filePaths = new string[]
                 {ALUOperationsFilePath, InstructionsFilePath, ConditionsFilePath, InternalAddressesFilePath};
+            string[] names = new string[]
+                {"ALU Operations", "Instructions", "Conditions", "Internal Addresses"};
 
-            foreach (string filePath in filePaths)
+            for (int index = 0; index < 4; index++)
             {
+                string[] fileLines = File.ReadAllLines(filePaths[index]);
+                string currentFile = names[index];
+                LookupTable currentTable = tables[index];
 
+                foreach (string line in fileLines)
+                {
+                    string[] lineParts = Regex.Split(line, "[ ]+");
+                    string[] fixedLineParts = RemoveEmptyStrings(lineParts);
+
+                    if (fixedLineParts.Length != 0)
+                    {
+                        if(fixedLineParts.Length != 2)
+                            throw new FormatException("Bad line in " + currentFile + " file at line: " + line);
+
+                        bool isLine = names[index] == "ALU Operations";
+                        string mnemonic = fixedLineParts[0];
+                        string value = fixedLineParts[1];
+
+                        TableEntry newTableEntry;
+                        try
+                        {
+                            newTableEntry = new TableEntry(mnemonic, value, isLine);
+                        }
+                        catch (FormatException)
+                        {
+                            throw new FormatException(
+                                "Value given in " + currentFile + " for the mnemonic: " + mnemonic + "is not binary.");
+                        }
+                        catch (OverflowException)
+                        {
+                            throw new OverflowException(
+                                "Value given in " + currentFile + " for the mnemonic: " + mnemonic + "is too large");
+                        }
+
+                        currentTable.AddEntry(newTableEntry);
+                    }
+                }
             }
         }
 
@@ -113,6 +147,23 @@ namespace MegacartAssembler
             }
 
             return input;
+        }
+
+        public static string IntToBinaryLine(int input)
+        {
+            string binaryString = Convert.ToString(input, 2);
+
+            int zeros = 6 - binaryString.Length;
+
+            if (zeros < 0)
+                throw new OverflowException("Integer passed to IntToBinaryLine method too large: " + input);
+
+            while (zeros > 0)
+            {
+                binaryString = "0" + binaryString;
+            }
+
+            return binaryString;
         }
     }
 }

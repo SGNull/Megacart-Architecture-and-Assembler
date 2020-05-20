@@ -88,5 +88,15 @@ namespace MegacartAssembler
             int output = Convert.ToInt32(Value);
             return output;
         }
+
+        public bool HasKeyword(string keyword)
+        {
+            return Keyword == keyword;
+        }
+
+        public bool HasValue(string value)
+        {
+            return Value == value;
+        }
     }
 }

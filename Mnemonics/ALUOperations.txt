@@ -1,1 +1,64 @@
-﻿
+﻿0  0    0000
+A' B'   OPCD
+
+NONE - Increment 0 and store the carry (invert a/b for carry=1, don't for carry=0) (Note: This operation DOES NOT write to ACC)
+ADZA - ADD 0 to A
+ADZB - ADD 0 to B
+INCA - Increment A
+
+INSA - INC A and store the carry 4
+INCB - Increment B
+INSB - INC B and store carry
+OR   - Logical OR
+
+AND  - Logical AND   8
+XOR  - Logical XOR
+SUM  - Summation
+SUMS - Add and store carry
+
+SMC  - Add w/ carry and store carry  12
+SM+1 - Add w/ +1
+SM+S - Add w/ +1 and store carry
+SMIN - Add w/ inverse of carry and store carry
+
+
+
+one  000000
+none 000000
+
+carry    010000
+setcarry 010000
+setcar   010000
+setc     010000
+setc1    010000
+
+resetcar   000000
+resetcarry 000000
+resetc     000000
+setc0      000000
+
+passb   000010
+passt   000010
+passtmp 000010
+
+passa   000001
+passacc 000001
+
+notb      010010
+nott      010010
+nottmp    010010
+invertb   010010
+invertt   010010
+inverttmp 010010
+
+nota      100010
+notacc    100010
+inverta   100010
+invertacc 100010
+
+inca                 |
+incacc               |
+incrementa           |
+incrementacc         |
+incrementaccumulator |
+
