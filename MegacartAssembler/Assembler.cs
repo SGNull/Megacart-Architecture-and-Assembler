@@ -15,7 +15,7 @@ namespace MegacartAssembler
         public static int EndOfMemory = 63;
 
         public static string TargetFileName = "TestFile.txt";
-        public static string PathFromUser = "\\source\\repos\\MegacartAssembler\\MegacartAssembler";
+        public static string PathFromUser = "\\source\\repos\\MegacartAssembler\\";
         public static string PathToUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string TargetFilePath = PathToUser + PathFromUser + TargetFileName;
 
