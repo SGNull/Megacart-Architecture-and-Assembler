@@ -1,1 +1,32 @@
-﻿
+﻿io   000
+ui   000
+port 000
+
+pc             001
+progc          001
+programcounter 001
+prgct          001
+
+acc         010
+accumulator 010
+a           010
+areg        010
+rega        010
+
+b    011
+breg 011
+tmp  011
+temp 011
+regb 011
+
+rg0  100
+reg0 100
+
+rg1  101
+reg1 101
+
+rg2  110
+reg2 110
+
+rg3  111
+reg3 111

@@ -1,1 +1,42 @@
-﻿
+﻿true  000
+.     000
+nocnd 000
+
+a!=0  001
+anz   001
+accnz 001
+
+b!=0  010
+bnz   010
+tmpnz 010
+
+a!=b 011
+neq  011
+
+car     100
+carry   100
+c       100
+c=1     100
+car=1   100
+carry=1 100
+
+ncar    101
+nocarry 101
+nc      101
+!c      101
+c=0     101
+car=0   101
+carry=0 101
+
+iowriting       110
+ioiswriting     110
+iowt            110
+receivingfromio 110
+receiving       110
+rcv             110
+iowrt           110
+
+ioreading 111
+ioready   111
+ioisready 111
+iord      111

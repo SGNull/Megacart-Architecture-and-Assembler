@@ -1,1 +1,47 @@
-﻿
+﻿alu 111
+
+jif 110
+jmp 110
+
+mwt      101
+memwrite 101
+memwt    101
+ramwt    101
+ramwrite 101
+
+mrd     100
+memread 100
+ramread 100
+memrd   100
+ramrd   100
+
+mtb    011
+wtb    011
+writeb 011
+mttemp 011
+mttmp  011
+wttmp  011
+
+mfb      010
+rdb      010
+readb    010
+readtmp  010
+rdtemp   010
+rdtmp    010
+movbto   010
+movtmpto 010
+
+mfa      001
+rda      001
+reada    001
+readacc  001
+rdacc    001
+movato   001
+movaccto 001
+
+end   000
+hlt   000
+eif   000
+hif   000
+endif 000
+hltif 000

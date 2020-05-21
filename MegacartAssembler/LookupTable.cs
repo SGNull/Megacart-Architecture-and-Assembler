@@ -27,7 +27,27 @@ namespace MegacartAssembler
                     return entry.Value;
                 }
             }
-            
+
+            throw new KeyNotFoundException("The keyword: " + keyword + " was not found in " + Name);
+        }
+
+        public bool HasEntryWithKeyword(string keyword)
+        {
+            foreach (TableEntry entry in Table)
+            {
+                if (entry.Keyword == keyword)
+                    return true;
+            }
+
+            return false;
+        }
+        public int GetPositionOfKeyword(string keyword)
+        {
+            for (int index = 0; index < Table.Count; index++)
+            {
+                if (Table[index].HasKeyword(keyword))
+                    return index;
+            }
             throw new KeyNotFoundException("The keyword: " + keyword + " was not found in " + Name);
         }
     }

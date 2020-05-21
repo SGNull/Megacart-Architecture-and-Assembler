@@ -1,48 +1,35 @@
-﻿0  0    0000
-A' B'   OPCD
-
-NONE - Increment 0 and store the carry (invert a/b for carry=1, don't for carry=0) (Note: This operation DOES NOT write to ACC)
-ADZA - ADD 0 to A
-ADZB - ADD 0 to B
-INCA - Increment A
-
-INSA - INC A and store the carry 4
-INCB - Increment B
-INSB - INC B and store carry
-OR   - Logical OR
-
-AND  - Logical AND   8
-XOR  - Logical XOR
-SUM  - Summation
-SUMS - Add and store carry
-
-SMC  - Add w/ carry and store carry  12
-SM+1 - Add w/ +1
-SM+S - Add w/ +1 and store carry
-SMIN - Add w/ inverse of carry and store carry
-
-
-
-one  000000
+﻿one  000000
 none 000000
+1    000000
 
 carry    010000
 setcarry 010000
 setcar   010000
 setc     010000
 setc1    010000
+c1       010000
 
 resetcar   000000
 resetcarry 000000
 resetc     000000
 setc0      000000
 
+passa   000001
+passacc 000001
+a       000001
+acc     000001
+
 passb   000010
 passt   000010
 passtmp 000010
+b       000010
+tmp     000010
 
-passa   000001
-passacc 000001
+nota      100001
+notacc    100001
+inverta   100001
+invertacc 100001
+a'
 
 notb      010010
 nott      010010
@@ -50,15 +37,121 @@ nottmp    010010
 invertb   010010
 invertt   010010
 inverttmp 010010
+b'        010010
+tmp'      010010
 
-nota      100010
-notacc    100010
-inverta   100010
-invertacc 100010
+nega 100011
+-a   100011
+-acc 100011
 
-inca                 |
-incacc               |
-incrementa           |
-incrementacc         |
-incrementaccumulator |
+negb 010101
+-b   010101
+-tmp 010101
 
+inca 000011
+ 
+incb 000101
+
+deca 010001
+dca  010001
+a-1  010001
+
+decb 100010
+dcb  100010
+b-1  100010
+
+incas 000100
+insa  000100
+
+incbs 000110
+insb  000110
+
+or   000111
+aorb 000111
+
+nor   111000
+anorb 111000
+
+impb  100111
+aimpb 100111
+
+impa  010111
+bimpa 010111
+
+nmpb  101000
+anmpb 101000
+
+nmpa  011000
+bnmpa 011000
+
+and 001000
+
+nand 110111
+
+xor 001001
+
+xnor 011001
+
+sum 001010
+add 001010
+a+b 001010
+b+a 001010
+
+sums 001011
+adds 001011
+a+bs 001011
+b+as 001011
+
+sumc 001100
+smc  001100
+addc 001100
+a+bc 001100
+b+ac 001100
+
+sumnc  001111
+smin   001111
+addnc  001111
+a+bnc  001111
+b+anc  001111
+a+b+c' 001111
+b+a+c' 001111
+
+add+1 001101
+sum+1 001101
+sm+1  001101
+a+b+1 001101
+b+a+1 001101
+
+add+s  001110
+sum+s  001110
+sm+s   001110
+a+b+1s 001110
+b+a+1s 001110
+
+asubb 011101
+a-b   011101
+
+bsuba 101101
+b-a   101101
+
+asubbs 011110
+a-bs   011110
+
+bsubas 101110
+b-as   101110
+
+asubbb        011111
+asubbwb       011111
+subbb         011111
+subbwb        011111
+a-bwb         011111
+a-bb          011111
+a-bwithborrow 011111
+
+bsubab        101111
+bsubawb       101111
+subab         101111
+subawb        101111
+b-awb         101111
+b-ab          101111
+b-awithborrow 101111
