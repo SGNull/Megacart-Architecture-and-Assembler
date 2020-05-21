@@ -1,16 +1,16 @@
 # Megacart_Architecture_Assembler
 An assembler for my Megacart Architecture's instruction set.
 
-This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. The process went something like this:
+This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. The process went something like this, for those interested:
 
 Initial Documentation > Hardware Development > Refine Documentation > Hardware Integration > Further Refine Documentation > Phase 1 Testing > Phase 2 Testing > Phase 3 Testing > Finalization
 
-Currently I am at phase 3 testing. The way I've defined the testing phases is as such:
-* Phase 1: Try executing a single instruction, and put duct-tape everywhere when everything inevitably breaks
-* Phase 2: Try executing multiple instructions to perform some kind of computation. Hopefully less things are breaking here.
+Currently I am at the phase 3 testing stage. Here are the testing phases:
+* Phase 1: Try executing a single instruction.
+* Phase 2: Try performing some kind of computation.
 * Phase 3: Actually try running a program on the computer.
 
-Right now I have to do all the assembling by myself. This means painstakingly going through the documentation, finding the codes for mnemonics, and replacing them with binary, not to mention all the labels that are being jumped to. I can't do this right away, of course, because I have to have both the source code and the machine code to know what is happening. So, this means having two copies of the program, each individually typed out, along with the spots in memory that they are at. It's just an overall mess.
+Like I said, I'm at stage 3 testing. Right now I have to do all the assembling by myself. This means painstakingly going through the documentation, finding the codes for mnemonics, and replacing them with binary, not to mention all the labels that are being jumped to. I can't do this right away, of course, because I have to have both the source code and the machine code to know what is happening. So, this means having two copies of the program, each individually typed out, along with the spots in memory that they are at. It's just an overall mess.
 So, I've decided to try my hand at building an assembler for it. Recently I just got done with a software engineering class, and a class about languages and automata, so hopefully this turns out OK.
 
 ## Functionality Plans:
@@ -51,3 +51,35 @@ If we see a blank line, we discard it and do nothing.
 * Labels
 * Internal Addresses
 * Conditions
+
+## Architecture Details:
+I created the components from scratch. Some of the designs I borrowed or were influenced by others, and they'll be credited when the build is done.
+* 6-bit CPU.
+* 8 instructions.
+* 4 two-line instructions, which take 3 clock cycles.
+* 4 one-line instructions, which take 2 clock cycles.
+* Acc, or the A register, cannot be written directly to. It must be written to from an ALU operation.
+* The temp register, or the B register, can be directly written to.
+* Unknown cycle speed. This is part of finalization.
+* Instructions: Conditional halt, conditional jump, read/write from memory, read/write from temp/B, read from acc/A, ALU operation.
+
+#### Instruction Format:
+
+IsTwoLine?[1-bit] Instruction[2-bit] Operand[3-bit] | OptionalSecondLine[6-bit]
+
+#### ALU operations are performed a bit wierdly.
+First you have to select the ALU instruction (111), then tell it where you want the result to go to in the next 3 bits. Then, the second line contains the opcode, but it's not a normal opcode. The bottom 4-bits of this opcode is the actual code that gets fed into the ALU Decoder to generate the control signals for the ALU. The top two bits control whether A/B is inverted respectively. I chose to do this, because it provided the maximum amount of instructions to the user, without requiring a giant 6-bit decoder.
+
+#### The components:
+
+CPU - Contains A and B registers, and the ALU.
+
+Secondary Controller - Takes the operand and converts it into whatever signals the instruction needs.
+
+ALU Decoder - Takes the code part of the opcode and converts it into control signals for the ALU.
+
+Fetch Registers - Stores the instructions to be executed.
+
+Primary Controller - The main logic of the computer. Contains the state counter, and generates all of the high-level control signals. Is responsible for fetching and executing.
+
+IO - The input/output port of the computer. Has two sets of read/write signals, one coming from the computer, the other going to the computer.
