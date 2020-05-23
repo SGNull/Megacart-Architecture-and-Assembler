@@ -27,6 +27,7 @@ nc      101
 c=0     101
 car=0   101
 carry=0 101
+!carry  101
 
 iowriting       110
 ioiswriting     110

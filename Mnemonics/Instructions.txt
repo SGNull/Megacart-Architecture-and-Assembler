@@ -4,12 +4,16 @@ jif 110
 jmp 110
 
 mwt      101
+mtr      101
+mtm      101
 memwrite 101
 memwt    101
 ramwt    101
 ramwrite 101
 
 mrd     100
+mfr     100
+mfm     100
 memread 100
 ramread 100
 memrd   100

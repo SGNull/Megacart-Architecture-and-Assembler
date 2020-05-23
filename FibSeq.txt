@@ -1,0 +1,21 @@
+//Fibbonacci sequence generator program!
+
+//First, let's load 1 into A, 0 into B
+ALU A 1
+ALU B A-1
+MFB IO
+
+//Next, the main loop. First we do b=a+b, then we do a=a+b
+//Note: the s at the end of A+B is to store the carry
+:main
+MFA IO
+ALU B A+Bs
+JIF carry EndLoc
+MFB IO
+
+ALU A A+Bs
+JIF !carry main
+
+//Finally, it stops before it overflows
+:EndLoc
+END .

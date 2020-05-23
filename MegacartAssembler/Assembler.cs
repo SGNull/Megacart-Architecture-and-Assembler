@@ -11,7 +11,7 @@ namespace MegacartAssembler
         public static int ProgramCounter;
         public static int EndOfMemory = 63;
 
-        public static string TargetFileName = "TestFile";
+        public static string TargetFileName = "FibSeq";
         public static string PathFromUser = "\\source\\repos\\MegacartAssembler\\";
         public static string PathToUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string TargetFilePath = PathToUser + PathFromUser + TargetFileName + ".txt";
@@ -108,7 +108,7 @@ namespace MegacartAssembler
 
                 if (!LineIsIgnorable(lineParts))
                 {
-                    if (LineIsLabel(lineParts)) //NEEDS TO CHECK FOR LINE BEING DOUBLE
+                    if (LineIsLabel(lineParts))
                     {
                         string label;
                         if (lineParts[0] == ":") //Line looks like ': LABEL'
@@ -116,14 +116,14 @@ namespace MegacartAssembler
                             if (lineParts.Length != 2)
                                 throw new FormatException("Bad label at line: '" + line + "'");
 
-                            label = lineParts[1].ToLower();
+                            label = lineParts[1];
                         }
                         else //Line looks like ':LABEL'
                         {
                             if (lineParts.Length != 1)
                                 throw new FormatException("Bad label at line: '" + line + "'");
 
-                            label = lineParts[0].Substring(1).ToLower();
+                            label = lineParts[0].Substring(1);
                         }
 
                         if (LabelTable.HasEntryWithKeyword(label))
@@ -140,7 +140,7 @@ namespace MegacartAssembler
                         string variable = lineParts[1];
                         string value;
 
-                        if (lineParts[0] == "d6") //Line looks like 'D6 VARIABLE 101101'
+                        if (lineParts[0].ToLower() == "d6") //Line looks like 'D6 VARIABLE 101101'
                         {
                             value = lineParts[2];
                         }
@@ -171,6 +171,9 @@ namespace MegacartAssembler
         {
             string[] fileLines = File.ReadAllLines(TargetFilePath);
             ProgramCounter = 0;
+
+            NewFileLines.Add("ADRESS:  DATA");
+            NewFileLines.Add("------- ------");
 
             foreach (string line in fileLines)
             {
@@ -259,15 +262,15 @@ namespace MegacartAssembler
         public static void WriteVariables()
         {
             if (EndOfMemory != 63){
-                NewFileLines.Add("----------------------");
-                NewFileLines.Add("----------------------");
+                NewFileLines.Add("--------------");
+                NewFileLines.Add("--------------");
 
                 List<TableEntry> variableTable = VariableTable.Table;
 
                 for (int index = (variableTable.Count - 1); index >= 0; index--)
                 {
                     string currentEntryValue = variableTable[index].Value;
-                    int memoryAddress = EndOfMemory - index;
+                    int memoryAddress = 63 - index;
                     string memoryAddressBinary = IntToBinaryLine(memoryAddress);
 
                     string machineCodeLine = memoryAddressBinary + ": " + currentEntryValue;
@@ -360,9 +363,9 @@ namespace MegacartAssembler
 
         public static bool LineIsVariable(string[] lineParts)
         {
-            if (lineParts[0] == "d6")
+            if (lineParts[0].ToLower() == "d6")
                 return true;
-            if (lineParts[0] == "d10")
+            if (lineParts[0].ToLower() == "d10")
                 return true;
             return false;
         }
@@ -386,7 +389,7 @@ namespace MegacartAssembler
 
         public static string GetAddressFromLine(string line)
         {
-            string targetLinePart = SplitLine(line)[2].ToLower();
+            string targetLinePart = SplitLine(line)[2];
             string output;
 
             if (Binary.IsMatch(targetLinePart))

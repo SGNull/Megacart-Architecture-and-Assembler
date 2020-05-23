@@ -1,0 +1,25 @@
+This is the reason why I created this assembler.
+A program as simple as generating the fibonacci sequence turns out to be this many lines of machine code, and can be very difficult to manually translate.
+
+Here are the mnemonic equivalents of each line (including labels!):
+Note: this is the most basic version of each mnemonic
+
+ADRESS:  DATA
+------- ------
+000000: 111010 ALU A
+000001: 000000 ONE
+000010: 111011 ALU B
+000011: 010001 DECA
+000100: 010000 MFB IO
+000101: 001000 MFA IO
+000110: 111011 ALU B
+000111: 001011 SUMS
+001000: 110100 JIF CAR
+001001: 001111 EndLoc
+001010: 010000 MFB IO
+001011: 111010 ALU A
+001100: 001011 SUMS
+001101: 110101 JIF NCAR
+001110: 000101 main
+001111: 000000 END TRUE
+

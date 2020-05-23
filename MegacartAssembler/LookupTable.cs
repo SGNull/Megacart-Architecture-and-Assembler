@@ -47,6 +47,7 @@ namespace MegacartAssembler
 
             return false;
         }
+
         public int GetPositionOfKeyword(string keyword)
         {
             for (int index = 0; index < Table.Count; index++)
