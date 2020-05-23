@@ -44,7 +44,7 @@ namespace MegacartAssembler
 
                 Console.WriteLine("Please input the source code file path (the file to be assembled):");
                 TargetFilePath = Console.ReadLine();
-            } 
+            }
             else if (args.Length == 1)
             {
                 //Target file only
@@ -60,32 +60,52 @@ namespace MegacartAssembler
             }
             else
             {
-                throw new ArgumentException("Bad number of arguments passed to the assembler.");
+                mnemonicsPath = null; //I do this throughout the code, because ReSharper doesn't seem to understand that Environment.Exit(0) exits the program.
+                Console.WriteLine("Bad number of arguments passed to the assembler.");
+                Environment.Exit(0);
             }
 
+            //Check if files exist
             ALUOperationsFilePath = mnemonicsPath + "\\ALUOperations.txt";
             if (!File.Exists(ALUOperationsFilePath))
-                throw new FileNotFoundException("ALU Operations mnemonics file does not exist.");
+            {
+                Console.WriteLine(
+                    "ALU Operations mnemonics file does not exist. Remember, the mnemonics folder should be in the same place as the code.");
+                Environment.Exit(0);
+            }
 
             InstructionsFilePath = mnemonicsPath + "\\Instructions.txt";
             if (!File.Exists(InstructionsFilePath))
-                throw new FileNotFoundException("Instructions mnemonics file does not exist");
+            {
+                Console.WriteLine("Instructions mnemonics file does not exist");
+                Environment.Exit(0);
+            }
 
             ConditionsFilePath = mnemonicsPath + "\\Conditions.txt";
             if (!File.Exists(ConditionsFilePath))
-                throw new FileNotFoundException("Conditions mnemonics file does not exist.");
+            {
+                Console.WriteLine("Conditions mnemonics file does not exist.");
+                Environment.Exit(0);
+            }
 
             InternalAddressesFilePath = mnemonicsPath + "\\InternalAddresses.txt";
             if (!File.Exists(InternalAddressesFilePath))
-                throw new FileNotFoundException("Internal Addresses mnemonics file does not exist.");
+            {
+                Console.WriteLine("Internal Addresses mnemonics file does not exist.");
+                Environment.Exit(0);
+            }
 
             if (!File.Exists(TargetFilePath))
-                throw new FileNotFoundException("Source code file does not exist.");
+            {
+                Console.WriteLine("Source code file does not exist.");
+                Environment.Exit(0);
+            }
 
             Regex period = new Regex(@"\.txt");
             string pathNoFileExtension = period.Split(TargetFilePath)[0];
             DestinationFilePath = pathNoFileExtension + ".machinecode.txt";
 
+            //Run the assembler
             PopulateMnemonicTables();
             ParseFileForSpecialLines();
             TranslateCodeToMachineCode();
@@ -116,8 +136,11 @@ namespace MegacartAssembler
 
                     if (lineParts.Length != 0)
                     {
-                        if(lineParts.Length != 2)
-                            throw new FormatException("Bad line in " + currentFile + " file at line: " + line);
+                        if (lineParts.Length != 2)
+                        {
+                            Console.WriteLine("Bad line in " + currentFile + " file at line: " + line);
+                            Environment.Exit(0);
+                        }
 
                         bool isLine = names[index] == "ALU Operations";
                         string mnemonic = lineParts[0];
@@ -130,13 +153,17 @@ namespace MegacartAssembler
                         }
                         catch (FormatException)
                         {
-                            throw new FormatException(
+                            newTableEntry = null;
+                            Console.WriteLine(
                                 "Value given in " + currentFile + " for the mnemonic: " + mnemonic + "is not binary.");
+                            Environment.Exit(0);
                         }
                         catch (OverflowException)
                         {
-                            throw new OverflowException(
+                            newTableEntry = null;
+                            Console.WriteLine(
                                 "Value given in " + currentFile + " for the mnemonic: " + mnemonic + "is too large");
+                            Environment.Exit(0);
                         }
 
                         currentTable.AddEntry(newTableEntry);
@@ -162,20 +189,29 @@ namespace MegacartAssembler
                         if (lineParts[0] == ":") //Line looks like ': LABEL'
                         {
                             if (lineParts.Length != 2)
-                                throw new FormatException("Bad label at line: '" + line + "'");
+                            {
+                                Console.WriteLine("Bad label at line: '" + line + "'");
+                                Environment.Exit(0);
+                            }
 
                             label = lineParts[1];
                         }
                         else //Line looks like ':LABEL'
                         {
                             if (lineParts.Length != 1)
-                                throw new FormatException("Bad label at line: '" + line + "'");
+                            {
+                                Console.WriteLine("Bad label at line: '" + line + "'");
+                                Environment.Exit(0);
+                            }
 
                             label = lineParts[0].Substring(1);
                         }
 
                         if (LabelTable.HasEntryWithKeyword(label))
-                            throw new DuplicateNameException("Label: " + label + " already exists in the program.");
+                        {
+                            Console.WriteLine("Label: " + label + " already exists in the program.");
+                            Environment.Exit(0);
+                        }
 
                         TableEntry newLabelEntry = new TableEntry(label, ProgramCounter, true);
                         LabelTable.AddEntry(newLabelEntry);
@@ -183,7 +219,10 @@ namespace MegacartAssembler
                     else if (LineIsVariable(lineParts))
                     {
                         if (lineParts.Length != 3)
-                            throw new FormatException("Bad variable declaration at line: '" + line + "'");
+                        {
+                            Console.WriteLine("Bad variable declaration at line: '" + line + "'");
+                            Environment.Exit(0);
+                        }
 
                         string variable = lineParts[1];
                         string value;
@@ -239,7 +278,9 @@ namespace MegacartAssembler
                     }
                     catch (KeyNotFoundException)
                     {
-                        throw new Exception("No known instruction: '" + instruction + "' at line: " + line);
+                        instructionValue = null;
+                        Console.WriteLine("No known instruction: '" + instruction + "' at line: " + line);
+                        Environment.Exit(0);
                     }
 
                     bool isTwoLine = instructionValue.StartsWith('1');
@@ -249,7 +290,10 @@ namespace MegacartAssembler
                     if (isTwoLine)
                     {
                         if (lineParts.Length != 3)
-                            throw new FormatException("Wrong number of arguments at line: " + line);
+                        {
+                            Console.WriteLine("Wrong number of arguments at line: " + line);
+                            Environment.Exit(0);
+                        }
 
                         if (instructionValue == "111") //Is an ALU instruction
                         {
@@ -261,7 +305,9 @@ namespace MegacartAssembler
                             }
                             catch (KeyNotFoundException)
                             {
-                                throw new Exception("No known operation: '" + lineParts[2] + "' at line :" + line);
+                                operation = null;
+                                Console.WriteLine("No known operation: '" + lineParts[2] + "' at line :" + line);
+                                Environment.Exit(0);
                             }
 
                             secondary = operation;
@@ -279,7 +325,10 @@ namespace MegacartAssembler
                     }
                     else {
                         if(lineParts.Length != 2)
-                            throw new FormatException("Wrong number of arguments at line: " + line);
+                        {
+                            Console.WriteLine("Wrong number of arguments at line: " + line);
+                            Environment.Exit(0);
+                        }
 
                         if(instructionValue == "000") //Is a halt instruction
                             operand = GetOperandFromTable(ConditionsTable, line);
@@ -292,7 +341,11 @@ namespace MegacartAssembler
                     ProgramCounter++;
 
                     if (ProgramCounter > EndOfMemory)
-                        throw new OverflowException("Code is too large to assemble. This could be due to a large number of variables declared.");
+                    {
+                        Console.WriteLine(
+                            "Code is too large to assemble. This could be due to a large number of variables declared.");
+                        Environment.Exit(0);
+                    }
 
                     if (isTwoLine)
                     {
@@ -302,7 +355,11 @@ namespace MegacartAssembler
                     }
 
                     if (ProgramCounter > EndOfMemory)
-                        throw new OverflowException("Code is too large to assemble. This could be due to a large number of variables declared.");
+                    {
+                        Console.WriteLine(
+                            "Code is too large to assemble. This could be due to a large number of variables declared.");
+                        Environment.Exit(0);
+                    }
                 }
             }
         }
@@ -429,7 +486,9 @@ namespace MegacartAssembler
             }
             catch (KeyNotFoundException)
             {
-                throw new Exception("No known operand: '" + targetLinePart + "' at line: " + line);
+                operandBinary = null;
+                Console.WriteLine("No known operand: '" + targetLinePart + "' at line: " + line);
+                Environment.Exit(0);
             }
 
             return operandBinary;
@@ -453,7 +512,11 @@ namespace MegacartAssembler
                 output = IntToBinaryLine(outputInt);
             }
             else
-                throw new Exception("No known address: '" + targetLinePart + "' at line: " + line);
+            {
+                output = null;
+                Console.WriteLine("No known address: '" + targetLinePart + "' at line: " + line);
+                Environment.Exit(0);
+            }
 
             return output;
         }
