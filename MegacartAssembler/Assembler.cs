@@ -11,16 +11,13 @@ namespace MegacartAssembler
         public static int ProgramCounter;
         public static int EndOfMemory = 63;
 
-        public static string TargetFileName = "FibSeq";
-        public static string PathFromUser = "\\source\\repos\\MegacartAssembler\\";
-        public static string PathToUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        public static string TargetFilePath = PathToUser + PathFromUser + TargetFileName + ".txt";
-        public static string DestinationFilePath = PathToUser + PathFromUser + TargetFileName + ".machinecode.txt";
+        public static string TargetFilePath;
+        public static string DestinationFilePath;
 
-        public static string ALUOperationsFilePath = PathToUser + PathFromUser + "\\Mnemonics\\ALUOperations.txt";
-        public static string InstructionsFilePath = PathToUser + PathFromUser + "\\Mnemonics\\Instructions.txt";
-        public static string ConditionsFilePath = PathToUser + PathFromUser + "\\Mnemonics\\Conditions.txt";
-        public static string InternalAddressesFilePath = PathToUser + PathFromUser + "\\Mnemonics\\InternalAddresses.txt";
+        public static string ALUOperationsFilePath;
+        public static string InstructionsFilePath;
+        public static string ConditionsFilePath;
+        public static string InternalAddressesFilePath;
 
         public static LookupTable LabelTable = new LookupTable("Labels");
         public static LookupTable VariableTable = new LookupTable("Variables");
@@ -37,14 +34,65 @@ namespace MegacartAssembler
 
         public static void Main(String[] args)
         {
-            if (File.Exists(TargetFilePath))
+            string mnemonicsPath;
+
+            if (args.Length == 0)
             {
-                PopulateMnemonicTables();
-                ParseFileForSpecialLines();
-                TranslateCodeToMachineCode();
-                WriteVariables();
-                WriteToNewFile();
+                //Prompt the user for arguments
+                Console.WriteLine("Please input the mnemonics folder file path");
+                mnemonicsPath = Console.ReadLine();
+
+                Console.WriteLine("Please input the source code file path (the file to be assembled):");
+                TargetFilePath = Console.ReadLine();
+            } 
+            else if (args.Length == 1)
+            {
+                //Target file only
+                TargetFilePath = Path.GetFullPath(args[0]);
+                mnemonicsPath = Path.GetDirectoryName(TargetFilePath) + "\\Mnemonics";
+
             }
+            else if (args.Length == 2)
+            {
+                //Target and Mnemonics
+                TargetFilePath = args[0];
+                mnemonicsPath = args[1];
+            }
+            else
+            {
+                throw new ArgumentException("Bad number of arguments passed to the assembler.");
+            }
+
+            ALUOperationsFilePath = mnemonicsPath + "\\ALUOperations.txt";
+            if (!File.Exists(ALUOperationsFilePath))
+                throw new FileNotFoundException("ALU Operations mnemonics file does not exist.");
+
+            InstructionsFilePath = mnemonicsPath + "\\Instructions.txt";
+            if (!File.Exists(InstructionsFilePath))
+                throw new FileNotFoundException("Instructions mnemonics file does not exist");
+
+            ConditionsFilePath = mnemonicsPath + "\\Conditions.txt";
+            if (!File.Exists(ConditionsFilePath))
+                throw new FileNotFoundException("Conditions mnemonics file does not exist.");
+
+            InternalAddressesFilePath = mnemonicsPath + "\\InternalAddresses.txt";
+            if (!File.Exists(InternalAddressesFilePath))
+                throw new FileNotFoundException("Internal Addresses mnemonics file does not exist.");
+
+            if (!File.Exists(TargetFilePath))
+                throw new FileNotFoundException("Source code file does not exist.");
+
+            Regex period = new Regex(@"\.txt");
+            string pathNoFileExtension = period.Split(TargetFilePath)[0];
+            DestinationFilePath = pathNoFileExtension + ".machinecode.txt";
+
+            PopulateMnemonicTables();
+            ParseFileForSpecialLines();
+            TranslateCodeToMachineCode();
+            WriteVariables();
+            WriteToNewFile();
+            
+            Console.WriteLine("Done!");
         }
 
         public static void PopulateMnemonicTables()
