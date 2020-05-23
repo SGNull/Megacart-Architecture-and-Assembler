@@ -1,9 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
-using MegacartAssembler;
-using Microsoft.VisualBasic.CompilerServices;
 
 namespace MegacartAssembler
 {
@@ -16,7 +15,7 @@ namespace MegacartAssembler
         public static string PathFromUser = "\\source\\repos\\MegacartAssembler\\";
         public static string PathToUser = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         public static string TargetFilePath = PathToUser + PathFromUser + TargetFileName + ".txt";
-        public static string DestinationFilePath = PathToUser + PathFromUser + TargetFileName + ".machinecode.txt"
+        public static string DestinationFilePath = PathToUser + PathFromUser + TargetFileName + ".machinecode.txt";
 
         public static string ALUOperationsFilePath = PathToUser + PathFromUser + "\\Mnemonics\\ALUOperations.txt";
         public static string InstructionsFilePath = PathToUser + PathFromUser + "\\Mnemonics\\Instructions.txt";
@@ -30,8 +29,11 @@ namespace MegacartAssembler
         public static LookupTable ConditionsTable = new LookupTable("Conditions");
         public static LookupTable InternalAddressesTable = new LookupTable("Internal Addresses");
 
-        public static Regex LabelPattern = new Regex(":[\\w]+");
-        public static Regex CommentPattern = new Regex("//[\\w]*");
+        public static Regex LabelPattern = new Regex(@":[\w]+");
+        public static Regex CommentPattern = new Regex(@"//[\w]*");
+        public static Regex Binary = new Regex("[0||1]+");
+
+        public static List<string> NewFileLines = new List<string>();
 
         public static void Main(String[] args)
         {
@@ -39,8 +41,9 @@ namespace MegacartAssembler
             {
                 PopulateMnemonicTables();
                 ParseFileForSpecialLines();
-                ParseFile(); //Variables are substituted with '63 - VariableTable.GetIndexOfKeyword(variable);'
-                ApplyVariables();
+                TranslateCodeToMachineCode();
+                WriteVariables();
+                WriteToNewFile();
             }
         }
 
@@ -105,7 +108,7 @@ namespace MegacartAssembler
 
                 if (!LineIsIgnorable(lineParts))
                 {
-                    if (LineIsLabel(lineParts))
+                    if (LineIsLabel(lineParts)) //NEEDS TO CHECK FOR LINE BEING DOUBLE
                     {
                         string label;
                         if (lineParts[0] == ":") //Line looks like ': LABEL'
@@ -128,9 +131,8 @@ namespace MegacartAssembler
 
                         TableEntry newLabelEntry = new TableEntry(label, ProgramCounter, true);
                         LabelTable.AddEntry(newLabelEntry);
-                    }
-
-                    if (LineIsVariable(lineParts))
+                    } 
+                    else if (LineIsVariable(lineParts))
                     {
                         if (lineParts.Length != 3)
                             throw new FormatException("Bad variable declaration at line: '" + line + "'");
@@ -151,26 +153,132 @@ namespace MegacartAssembler
                         TableEntry newVariableEntry = new TableEntry(variable, value, true);
                         VariableTable.AddEntry(newVariableEntry);
                         EndOfMemory--;
+                    } 
+                    else if (lineParts.Length == 3)
+                    {
+                        ProgramCounter++;
+                        ProgramCounter++;
                     }
-                    ProgramCounter++;
+                    else
+                    {
+                        ProgramCounter++;
+                    }
                 }
             }
         }
 
-        public static void ParseFile()
+        public static void TranslateCodeToMachineCode()
         {
             string[] fileLines = File.ReadAllLines(TargetFilePath);
             ProgramCounter = 0;
 
             foreach (string line in fileLines)
             {
-                
+                string[] lineParts = SplitLine(line);
+                bool isCode = !(LineIsIgnorable(lineParts) || LineIsVariable(lineParts) || LineIsLabel(lineParts));
+
+                if (isCode)
+                {
+                    string instruction = lineParts[0].ToLower();
+                    string instructionValue;
+
+                    try
+                    {
+                        instructionValue = InstructionsTable.GetValueForKeyword(instruction);
+                    }
+                    catch (KeyNotFoundException)
+                    {
+                        throw new Exception("No known instruction: '" + instruction + "' at line: " + line);
+                    }
+
+                    bool isTwoLine = instructionValue.StartsWith('1');
+                    string operand = "";
+                    string secondary = "";
+
+                    if (isTwoLine)
+                    {
+                        if (lineParts.Length != 3)
+                            throw new FormatException("Wrong number of arguments at line: " + line);
+
+                        if (instructionValue == "111") //Is an ALU instruction
+                        {
+                            operand = GetOperandFromTable(InternalAddressesTable, line);
+                            string operation;
+                            try
+                            {
+                                operation = ALUOperationsTable.GetValueForKeyword(lineParts[2].ToLower());
+                            }
+                            catch (KeyNotFoundException)
+                            {
+                                throw new Exception("No known operation: '" + lineParts[2] + "' at line :" + line);
+                            }
+
+                            secondary = operation;
+                        } 
+                        else if (instructionValue == "110") //Is a jump instruction
+                        {
+                            operand = GetOperandFromTable(ConditionsTable, line);
+                            secondary = GetAddressFromLine(line);
+                        }
+                        else //Is a memory read/write instruction
+                        {
+                            operand = GetOperandFromTable(InternalAddressesTable, line);
+                            secondary = GetAddressFromLine(line);
+                        }
+                    }
+                    else {
+                        if(lineParts.Length != 2)
+                            throw new FormatException("Wrong number of arguments at line: " + line);
+
+                        if(instructionValue == "000") //Is a halt instruction
+                            operand = GetOperandFromTable(ConditionsTable, line);
+                        else //Is a MOV instruction
+                            operand = GetOperandFromTable(InternalAddressesTable, line);
+                    }
+
+                    string machineCodeLine1 = IntToBinaryLine(ProgramCounter) + ": " + instructionValue + operand;
+                    NewFileLines.Add(machineCodeLine1);
+                    ProgramCounter++;
+
+                    if (ProgramCounter > EndOfMemory)
+                        throw new OverflowException("Code is too large to assemble. This could be due to a large number of variables declared.");
+
+                    if (isTwoLine)
+                    {
+                        string machineCodeLine2 = IntToBinaryLine(ProgramCounter) + ": " + secondary;
+                        NewFileLines.Add(machineCodeLine2);
+                        ProgramCounter++;
+                    }
+
+                    if (ProgramCounter > EndOfMemory)
+                        throw new OverflowException("Code is too large to assemble. This could be due to a large number of variables declared.");
+                }
             }
         }
 
-        public static void ApplyVariables()
+        public static void WriteVariables()
         {
+            if (EndOfMemory != 63){
+                NewFileLines.Add("----------------------");
+                NewFileLines.Add("----------------------");
 
+                List<TableEntry> variableTable = VariableTable.Table;
+
+                for (int index = (variableTable.Count - 1); index >= 0; index--)
+                {
+                    string currentEntryValue = variableTable[index].Value;
+                    int memoryAddress = EndOfMemory - index;
+                    string memoryAddressBinary = IntToBinaryLine(memoryAddress);
+
+                    string machineCodeLine = memoryAddressBinary + ": " + currentEntryValue;
+                    NewFileLines.Add(machineCodeLine);
+                }
+            }
+        }
+
+        public static void WriteToNewFile()
+        {
+            File.WriteAllLines(DestinationFilePath, NewFileLines);
         }
 
         public static string[] SplitLine(string input)
@@ -226,6 +334,12 @@ namespace MegacartAssembler
             return binaryString;
         }
 
+        public static int BinaryLineToInt(string input)
+        {
+            int output = Convert.ToInt32(input, 2);
+            return output;
+        }
+
         public static bool LineIsIgnorable(string[] lineParts)
         {
             if (lineParts.Length == 0)
@@ -251,6 +365,46 @@ namespace MegacartAssembler
             if (lineParts[0] == "d10")
                 return true;
             return false;
+        }
+
+        public static string GetOperandFromTable(LookupTable table, string line)
+        {
+            string targetLinePart = SplitLine(line)[1].ToLower();
+            string operandBinary;
+
+            try
+            {
+                operandBinary = table.GetValueForKeyword(targetLinePart);
+            }
+            catch (KeyNotFoundException)
+            {
+                throw new Exception("No known operand: '" + targetLinePart + "' at line: " + line);
+            }
+
+            return operandBinary;
+        }
+
+        public static string GetAddressFromLine(string line)
+        {
+            string targetLinePart = SplitLine(line)[2].ToLower();
+            string output;
+
+            if (Binary.IsMatch(targetLinePart))
+                output = targetLinePart;
+
+            else if (LabelTable.HasEntryWithKeyword(targetLinePart))
+                output = LabelTable.GetValueForKeyword(targetLinePart);
+
+            else if (VariableTable.HasEntryWithKeyword(targetLinePart))
+            {
+                int index = VariableTable.GetPositionOfKeyword(targetLinePart);
+                int outputInt = 63 - index;
+                output = IntToBinaryLine(outputInt);
+            }
+            else
+                throw new Exception("No known address: '" + targetLinePart + "' at line: " + line);
+
+            return output;
         }
     }
 }

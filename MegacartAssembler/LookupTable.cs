@@ -1,11 +1,17 @@
 ﻿using System.Collections.Generic;
-using MegacartAssembler;
 
 namespace MegacartAssembler
 {
     class LookupTable
     {
-        private List<TableEntry> Table = new List<TableEntry>();
+        private List<TableEntry> _table = new List<TableEntry>();
+
+        public List<TableEntry> Table
+        {
+            get => _table;
+            set => _table = value;
+        }
+
         private string Name { get; set; }
 
         public LookupTable(string name)
@@ -18,7 +24,7 @@ namespace MegacartAssembler
             Table.Add(newEntry);
         }
 
-        public string FindValueForKeyword(string keyword)
+        public string GetValueForKeyword(string keyword)
         {
             foreach (TableEntry entry in Table)
             {

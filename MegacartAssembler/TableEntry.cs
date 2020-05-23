@@ -85,7 +85,7 @@ namespace MegacartAssembler
 
         public int GetValueAsInt()
         {
-            int output = Convert.ToInt32(Value);
+            int output = Convert.ToInt32(Value, 2);
             return output;
         }
 

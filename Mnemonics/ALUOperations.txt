@@ -29,7 +29,8 @@ nota      100001
 notacc    100001
 inverta   100001
 invertacc 100001
-a'
+a'        100001
+acc'      100001
 
 notb      010010
 nott      010010
@@ -48,9 +49,13 @@ negb 010101
 -b   010101
 -tmp 010101
 
-inca 000011
+inca  000011
+a+1   000011
+acc+1 000011
  
-incb 000101
+incb  000101
+b+1   000101
+tmp+1 000101
 
 deca 010001
 dca  010001
