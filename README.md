@@ -1,4 +1,4 @@
-# Megacart_Architecture_Assembler
+# Megacart Architecture Assembler
 An assembler for my Megacart Architecture's instruction set.
 
 This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. The process went something like this, for those interested:
