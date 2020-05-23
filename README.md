@@ -26,6 +26,7 @@ The second pass is when the parsing happens. This is just matching mnemonics/lab
 If it sees something unexpected, it spits out some error.
 If it sees an empty line, or a line starting with : or D6, it ignores it.
 It also ignores spaces in lines.
+Additionally, I've added the ability to make comments, so it also ignores any line like "//Comment" or "// Here's another comment".
 
 #### Variables work a bit differently though.
 Variables will be treated as labels to jump to.
