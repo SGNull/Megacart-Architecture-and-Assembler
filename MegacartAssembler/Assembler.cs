@@ -27,8 +27,8 @@ namespace MegacartAssembler
         public static LookupTable ConditionsTable = new LookupTable("Conditions");
         public static LookupTable InternalAddressesTable = new LookupTable("Internal Addresses");
 
-        public static Regex LabelPattern = new Regex("^:[\\w]+$");
-        public static Regex CommentPattern = new Regex("^//[\\w]*$");
+        public static Regex LabelPattern = new Regex("^:[\\S]+$");
+        public static Regex CommentPattern = new Regex("^//[\\S]*$");
         public static Regex Binary = new Regex("^[0||1]+$");
 
         public static List<string> NewFileLines = new List<string>();
