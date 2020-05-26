@@ -230,19 +230,19 @@ namespace MegacartAssembler
                         else //Line looks like 'D10 VARIABLE 23'
                         {
                             int valueAsInt = Int32.Parse(lineParts[2]);
-                            value = IntToBinaryLine(valueAsInt);
+                            try
+                            {
+                                value = IntToBinaryLine(valueAsInt);
+                            }
+                            catch (OverflowException)
+                            {
+                                value = null;
+                                StopWithErrorMessage("Variable '" + variable + "' is too large at line: '" + line + "'");
+                            }
                         }
 
                         TableEntry newVariableEntry = new TableEntry(variable, value, true);
-
-                        try
-                        {
-                            VariableTable.AddEntry(newVariableEntry);
-                        }
-                        catch (OverflowException)
-                        {
-                            StopWithErrorMessage("Variable value too large at line: '" + line + "'");
-                        }
+                        VariableTable.AddEntry(newVariableEntry);
 
                         EndOfMemory--;
                     } 
