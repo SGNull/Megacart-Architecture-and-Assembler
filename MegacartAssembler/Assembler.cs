@@ -257,6 +257,8 @@ namespace MegacartAssembler
                     }
                 }
             }
+
+            CodeEndsHere = ProgramCounter;
         }
 
         public static void TranslateCodeToMachineCode()
@@ -359,16 +361,11 @@ namespace MegacartAssembler
                     }
                 }
             }
-
-            CodeEndsHere = ProgramCounter;
         }
 
         public static void WriteVariables()
         {
             if (EndOfMemory != 63){
-                NewFileLines.Add("--------------");
-                NewFileLines.Add("--------------");
-
                 List<TableEntry> variableTable = VariableTable.Table;
 
                 for (int index = (variableTable.Count - 1); index >= 0; index--)
@@ -390,7 +387,7 @@ namespace MegacartAssembler
 
         public static string[] SplitLine(string input)
         {
-            string[] lineParts = Regex.Split(input, "[ ]+");
+            string[] lineParts = Regex.Split(input, "[ ||\t]+");
 
             if (lineParts.Length == 1)
             {
@@ -506,7 +503,7 @@ namespace MegacartAssembler
             else if (VariableTable.HasEntryWithKeyword(targetLinePart))
             {
                 int index = VariableTable.GetPositionOfKeyword(targetLinePart);
-                int outputInt = 63 - index;
+                int outputInt = CodeEndsHere - index;
                 output = IntToBinaryLine(outputInt);
             }
             else
