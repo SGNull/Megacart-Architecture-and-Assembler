@@ -6,12 +6,12 @@ a!=0  001
 anz   001
 accnz 001
 
-b!=0  010
-bnz   010
-tmpnz 010
+a!=b 010
+neq  010
 
-a!=b 011
-neq  011
+b!=0  011
+bnz   011
+tmpnz 011
 
 car     100
 carry   100
