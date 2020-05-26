@@ -368,10 +368,10 @@ namespace MegacartAssembler
             if (EndOfMemory != 63){
                 List<TableEntry> variableTable = VariableTable.Table;
 
-                for (int index = (variableTable.Count - 1); index >= 0; index--)
+                for (int index = 0; index < variableTable.Count; index++)
                 {
                     string currentEntryValue = variableTable[index].Value;
-                    int memoryAddress = CodeEndsHere - index;
+                    int memoryAddress = CodeEndsHere + index;
                     string memoryAddressBinary = IntToBinaryLine(memoryAddress);
 
                     string machineCodeLine = memoryAddressBinary + ": " + currentEntryValue;
@@ -503,7 +503,7 @@ namespace MegacartAssembler
             else if (VariableTable.HasEntryWithKeyword(targetLinePart))
             {
                 int index = VariableTable.GetPositionOfKeyword(targetLinePart);
-                int outputInt = CodeEndsHere - index;
+                int outputInt = CodeEndsHere + index;
                 output = IntToBinaryLine(outputInt);
             }
             else
