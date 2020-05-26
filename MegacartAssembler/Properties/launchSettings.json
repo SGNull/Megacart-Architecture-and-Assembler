@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "MegacartAssembler": {
+      "commandName": "Project",
+      "commandLineArgs": "C:\\Users\\Devin\\source\\repos\\MegacartAssembler\\TestFile.txt"
+    }
+  }
+}

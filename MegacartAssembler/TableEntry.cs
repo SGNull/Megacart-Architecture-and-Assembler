@@ -5,8 +5,7 @@ namespace MegacartAssembler
 {
     class TableEntry
     {
-        //Big shoutout to https://stackoverflow.com/questions/1271562/binary-string-to-integer
-        private static readonly Regex Binary = new Regex("^[01]{1,32}$", RegexOptions.Compiled);
+        public static readonly Regex Binary = new Regex("^[0||1]+$");
 
         public bool? IsLine { get; set; }
 

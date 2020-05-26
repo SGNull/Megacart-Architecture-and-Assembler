@@ -10,6 +10,7 @@ namespace MegacartAssembler
     {
         public static int ProgramCounter;
         public static int EndOfMemory = 63;
+        public static int CodeEndsHere;
 
         public static string TargetFilePath;
         public static string DestinationFilePath;
@@ -26,9 +27,9 @@ namespace MegacartAssembler
         public static LookupTable ConditionsTable = new LookupTable("Conditions");
         public static LookupTable InternalAddressesTable = new LookupTable("Internal Addresses");
 
-        public static Regex LabelPattern = new Regex(@":[\w]+");
-        public static Regex CommentPattern = new Regex(@"//[\w]*");
-        public static Regex Binary = new Regex("[0||1]+");
+        public static Regex LabelPattern = new Regex("^:[\\w]+$");
+        public static Regex CommentPattern = new Regex("^//[\\w]*$");
+        public static Regex Binary = new Regex("^[0||1]+$");
 
         public static List<string> NewFileLines = new List<string>();
 
@@ -48,8 +49,12 @@ namespace MegacartAssembler
             else if (args.Length == 1)
             {
                 //Target file only
+                //Code from https://stackoverflow.com/questions/837488/how-can-i-get-the-applications-path-in-a-net-console-application
+                string directory = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                string localDirectory = Path.GetDirectoryName(new Uri(directory).LocalPath);
+
                 TargetFilePath = Path.GetFullPath(args[0]);
-                mnemonicsPath = Path.GetDirectoryName(TargetFilePath) + "\\Mnemonics";
+                mnemonicsPath = localDirectory + "\\Mnemonics";
 
             }
             else if (args.Length == 2)
@@ -60,45 +65,45 @@ namespace MegacartAssembler
             }
             else
             {
-                mnemonicsPath = null; //I do this throughout the code, because ReSharper doesn't seem to understand that Environment.Exit(0) exits the program.
-                Console.WriteLine("Bad number of arguments passed to the assembler.");
-                Environment.Exit(0);
+                mnemonicsPath = null; //I do this throughout the code, because ReSharper doesn't seem to understand that Environment.Exit(0) stops the program.
+                StopWithErrorMessage("Bad number of arguments passed to the assembler.");
             }
 
             //Check if files exist
+            if (!Directory.Exists(mnemonicsPath))
+            {
+                StopWithErrorMessage(
+                    "The mnemonics folder does not exist. It should be where the assembler is.");
+            }
+            
             ALUOperationsFilePath = mnemonicsPath + "\\ALUOperations.txt";
             if (!File.Exists(ALUOperationsFilePath))
             {
-                Console.WriteLine(
-                    "ALU Operations mnemonics file does not exist. Remember, the mnemonics folder should be in the same place as the code.");
-                Environment.Exit(0);
+                StopWithErrorMessage(
+                    "ALU Operations mnemonics file does not exist.");
             }
 
             InstructionsFilePath = mnemonicsPath + "\\Instructions.txt";
             if (!File.Exists(InstructionsFilePath))
             {
-                Console.WriteLine("Instructions mnemonics file does not exist");
-                Environment.Exit(0);
+                StopWithErrorMessage("Instructions mnemonics file does not exist");
             }
 
             ConditionsFilePath = mnemonicsPath + "\\Conditions.txt";
             if (!File.Exists(ConditionsFilePath))
             {
-                Console.WriteLine("Conditions mnemonics file does not exist.");
-                Environment.Exit(0);
+                StopWithErrorMessage("Conditions mnemonics file does not exist.");
             }
 
             InternalAddressesFilePath = mnemonicsPath + "\\InternalAddresses.txt";
             if (!File.Exists(InternalAddressesFilePath))
             {
-                Console.WriteLine("Internal Addresses mnemonics file does not exist.");
-                Environment.Exit(0);
+                StopWithErrorMessage("Internal Addresses mnemonics file does not exist.");
             }
 
             if (!File.Exists(TargetFilePath))
             {
-                Console.WriteLine("Source code file does not exist.");
-                Environment.Exit(0);
+                StopWithErrorMessage("Source code file does not exist.");
             }
 
             Regex period = new Regex(@"\.txt");
@@ -138,8 +143,7 @@ namespace MegacartAssembler
                     {
                         if (lineParts.Length != 2)
                         {
-                            Console.WriteLine("Bad line in " + currentFile + " file at line: " + line);
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Bad line in " + currentFile + " file at line: '" + line + "'");
                         }
 
                         bool isLine = names[index] == "ALU Operations";
@@ -154,16 +158,12 @@ namespace MegacartAssembler
                         catch (FormatException)
                         {
                             newTableEntry = null;
-                            Console.WriteLine(
-                                "Value given in " + currentFile + " for the mnemonic: " + mnemonic + "is not binary.");
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Value given in " + currentFile + " for the mnemonic: '" + mnemonic + "' is not binary.");
                         }
                         catch (OverflowException)
                         {
                             newTableEntry = null;
-                            Console.WriteLine(
-                                "Value given in " + currentFile + " for the mnemonic: " + mnemonic + "is too large");
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Value given in " + currentFile + " for the mnemonic: '" + mnemonic + "' is too large");
                         }
 
                         currentTable.AddEntry(newTableEntry);
@@ -190,8 +190,7 @@ namespace MegacartAssembler
                         {
                             if (lineParts.Length != 2)
                             {
-                                Console.WriteLine("Bad label at line: '" + line + "'");
-                                Environment.Exit(0);
+                                StopWithErrorMessage("Bad label at line: '" + line + "'");
                             }
 
                             label = lineParts[1];
@@ -200,8 +199,7 @@ namespace MegacartAssembler
                         {
                             if (lineParts.Length != 1)
                             {
-                                Console.WriteLine("Bad label at line: '" + line + "'");
-                                Environment.Exit(0);
+                                StopWithErrorMessage("Bad label at line: '" + line + "'");
                             }
 
                             label = lineParts[0].Substring(1);
@@ -209,8 +207,7 @@ namespace MegacartAssembler
 
                         if (LabelTable.HasEntryWithKeyword(label))
                         {
-                            Console.WriteLine("Label: " + label + " already exists in the program.");
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Label: " + label + " already exists in the program.");
                         }
 
                         TableEntry newLabelEntry = new TableEntry(label, ProgramCounter, true);
@@ -220,8 +217,7 @@ namespace MegacartAssembler
                     {
                         if (lineParts.Length != 3)
                         {
-                            Console.WriteLine("Bad variable declaration at line: '" + line + "'");
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Bad variable declaration at line: '" + line + "'");
                         }
 
                         string variable = lineParts[1];
@@ -238,7 +234,16 @@ namespace MegacartAssembler
                         }
 
                         TableEntry newVariableEntry = new TableEntry(variable, value, true);
-                        VariableTable.AddEntry(newVariableEntry);
+
+                        try
+                        {
+                            VariableTable.AddEntry(newVariableEntry);
+                        }
+                        catch (OverflowException)
+                        {
+                            StopWithErrorMessage("Variable value too large at line: '" + line + "'");
+                        }
+
                         EndOfMemory--;
                     } 
                     else if (lineParts.Length == 3)
@@ -279,8 +284,7 @@ namespace MegacartAssembler
                     catch (KeyNotFoundException)
                     {
                         instructionValue = null;
-                        Console.WriteLine("No known instruction: '" + instruction + "' at line: " + line);
-                        Environment.Exit(0);
+                        StopWithErrorMessage("No known instruction: '" + instruction + "' at line: '" + line + "'");
                     }
 
                     bool isTwoLine = instructionValue.StartsWith('1');
@@ -291,8 +295,7 @@ namespace MegacartAssembler
                     {
                         if (lineParts.Length != 3)
                         {
-                            Console.WriteLine("Wrong number of arguments at line: " + line);
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Wrong number of arguments at line: '" + line + "'");
                         }
 
                         if (instructionValue == "111") //Is an ALU instruction
@@ -306,8 +309,7 @@ namespace MegacartAssembler
                             catch (KeyNotFoundException)
                             {
                                 operation = null;
-                                Console.WriteLine("No known operation: '" + lineParts[2] + "' at line :" + line);
-                                Environment.Exit(0);
+                                StopWithErrorMessage("No known operation: '" + lineParts[2] + "' at line: '" + line + "'");
                             }
 
                             secondary = operation;
@@ -326,8 +328,7 @@ namespace MegacartAssembler
                     else {
                         if(lineParts.Length != 2)
                         {
-                            Console.WriteLine("Wrong number of arguments at line: " + line);
-                            Environment.Exit(0);
+                            StopWithErrorMessage("Wrong number of arguments at line: '" + line + "'");
                         }
 
                         if(instructionValue == "000") //Is a halt instruction
@@ -342,9 +343,7 @@ namespace MegacartAssembler
 
                     if (ProgramCounter > EndOfMemory)
                     {
-                        Console.WriteLine(
-                            "Code is too large to assemble. This could be due to a large number of variables declared.");
-                        Environment.Exit(0);
+                        StopWithErrorMessage("Code is too large to assemble. This could be due to a large number of variables declared.");
                     }
 
                     if (isTwoLine)
@@ -356,12 +355,12 @@ namespace MegacartAssembler
 
                     if (ProgramCounter > EndOfMemory)
                     {
-                        Console.WriteLine(
-                            "Code is too large to assemble. This could be due to a large number of variables declared.");
-                        Environment.Exit(0);
+                        StopWithErrorMessage("Code is too large to assemble. This could be due to a large number of variables declared.");
                     }
                 }
             }
+
+            CodeEndsHere = ProgramCounter;
         }
 
         public static void WriteVariables()
@@ -375,7 +374,7 @@ namespace MegacartAssembler
                 for (int index = (variableTable.Count - 1); index >= 0; index--)
                 {
                     string currentEntryValue = variableTable[index].Value;
-                    int memoryAddress = 63 - index;
+                    int memoryAddress = CodeEndsHere - index;
                     string memoryAddressBinary = IntToBinaryLine(memoryAddress);
 
                     string machineCodeLine = memoryAddressBinary + ": " + currentEntryValue;
@@ -487,8 +486,7 @@ namespace MegacartAssembler
             catch (KeyNotFoundException)
             {
                 operandBinary = null;
-                Console.WriteLine("No known operand: '" + targetLinePart + "' at line: " + line);
-                Environment.Exit(0);
+                StopWithErrorMessage("No known operand: '" + targetLinePart + "' at line: " + line);
             }
 
             return operandBinary;
@@ -514,11 +512,18 @@ namespace MegacartAssembler
             else
             {
                 output = null;
-                Console.WriteLine("No known address: '" + targetLinePart + "' at line: " + line);
-                Environment.Exit(0);
+                StopWithErrorMessage("No known address: '" + targetLinePart + "' at line: " + line);
             }
 
             return output;
+        }
+
+        public static void StopWithErrorMessage(string message)
+        {
+            Console.WriteLine(message);
+            Console.WriteLine("Press any key to exit...");
+            Console.ReadKey();
+            Environment.Exit(0);
         }
     }
 }
