@@ -1,17 +1,28 @@
 # Megacart Architecture Assembler
 An assembler for my Megacart Architecture's instruction set.
 
-This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture.
+This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. With the computer designed, an assembler was the next logical step. This made it much easier to test the computer, since I didn't have to painstakingly comb through my documentation to translate from mnemonics to machine code. Also, this allows programmers to be more expressive than just simple mnemonics like in other assembly languages. Mnemonics can be anything or any word(s) you want!
 
 ## Need-to-Know
 The assembler gets the mnemonics from the files in the Mnemonics folder. This folder must be in the same place as the executable. The assembler accepts three different sets of arguments:
 * If you pass it 0 arguments: It will ask for you to specify the target file and the mnemonics folder path.
-* If you pass it 1: It will assume you are passing it the location of the target file, and will look for the Mnemonics folder where the Assembler.exe is.
+* If you pass it 1: It will assume you are passing it the location of the target file, and will look for the Mnemonics folder where the executable is.
 * And for 2: It will assume that you gave it the target file and the Mnemonics folder location, in that order.
 
 Any other number of arguments will result in an error. It also spits out a variety of errors if the code you type is incorrect. This was a big focus of the program, because the user should be easily able to find the problem if one exists.
 
-If you have a certain way that you want to type something out, that makes better sense in that context than some of the other mnemonic combinations do, you can add a new mnemonic to one of the files. You can look for the mnemonic that means the same thing and add your new one next to it with the same binary after it.
+If you have a certain way that you want to type something out, that makes better sense in that context than some of the other mnemonic combinations do, you can add some new mnemonics to the files. You can look for the mnemonic that means the same thing and add your new one next to it with the same binary after it. For example, if I wanted to use register 2 for a counter in my program, I would add this to the InternalAddresses.txt file:
+```
+...
+
+rg2  110
+reg2 110
+counter 110
+
+...
+```
+
+Though, I'd recommend keeping the binary at a consistant distance from the mnemonics. It doesn't really matter, but it looks nicer.
 
 #### Finally, some stuff you can do:
 ```
