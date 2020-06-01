@@ -33,6 +33,7 @@ Though, I'd recommend keeping the binary at a consistant distance from the mnemo
 ```
 
 Jumps to labels work as you'd expect (but remember that jump is always conditional, so at least put a period down)
+
 ```JMP . LABEL```
 
 Variables work in these two ways:
@@ -79,7 +80,6 @@ When it comes across one of these, it stores it along with the programCounter in
 
 #### Variables work a bit differently though.
 Variables will be treated as labels to jump to.
-Now, the following solution (I think) has a certain bad-coding-practices smell to it, but bear with me, as this is the simplest solution I can think of.
 Unlike with every other entry, variables need three pieces of information stored with them: Their name, their value, and then their position in memory.
 I would rather not create a special object that will exclusively be used by variables, just to store one extra piece of data.
 Instead it would be easier to use their position in the table as their position in memory, because this is exactly how it will work.
@@ -93,13 +93,6 @@ If it sees something unexpected, it spits out some error.
 If it sees an empty line, or a line starting with : or D6/D10, it ignores it.
 It also ignores spaces in lines.
 Additionally, I've added the ability to make comments, so it also ignores any line like "//Comment" or "// Here's another comment".
-
-#### The final parse through the file will write to a .machinecode.txt file
-For this final parse, I have decided against interpreting the source code at multiple levels (of abstraction).
-My thought process behind this is: If you're using an assembler, why would you want to type at a lower level?
-The only instance where I could see this being useful is with variables, but that does not involve the instructions themselves, and it already allows for this.
-I'm not opposed to doing this because it's a hard problem to solve, I just feel like it would be a waste of my time.
-Also, because I made the program to support nearly every possible mnemonic, you could just add an instruction's value to the mnemonic files as a mnemonic.
 
 #### Types of mnemonics:
 * Instructions
