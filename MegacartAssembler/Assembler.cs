@@ -227,7 +227,7 @@ namespace MegacartAssembler
                         {
                             value = lineParts[2];
                         }
-                        else //Line looks like 'D10 VARIABLE 23'
+                        else if (lineParts[0].ToLower() == "d10") //Line looks like 'D10 VARIABLE 23'
                         {
                             int valueAsInt = Int32.Parse(lineParts[2]);
                             try
@@ -239,6 +239,13 @@ namespace MegacartAssembler
                                 value = null;
                                 StopWithErrorMessage("Variable '" + variable + "' is too large at line: '" + line + "'");
                             }
+                        } 
+                        else {
+                            if(LabelTable.HasEntryWithKeyword(lineParts[2])){
+                                value = null;
+                                StopWithErrorMessage("The label '" + lineParts[2] + "' is not before this in the code. Make sure this variable declaration is at the end!");
+                            }
+                            value = LabelTable.GetValueForKeyword(lineParts[2]);
                         }
 
                         TableEntry newVariableEntry = new TableEntry(variable, value, true);
@@ -467,6 +474,8 @@ namespace MegacartAssembler
             if (lineParts[0].ToLower() == "d6")
                 return true;
             if (lineParts[0].ToLower() == "d10")
+                return true;
+            if (lineParts[0].ToLower() == "dl")
                 return true;
             return false;
         }
