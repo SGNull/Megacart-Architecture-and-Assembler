@@ -50,6 +50,12 @@ MWT Acc DecimalVariable
 
 I think you can even jump to them, but I don't know why you'd want to do that.
 
+\*You can now get the actual value of labels in memory, by doing this:
+```
+DL MyLabelValue MYLABEL
+```
+This was added in as a result of some new architecture changes. Sometimes I found myself wanting the raw value of a label for certain things, so I added this in. It works a bit odd though. You must put it after the label in question. So, as a rule of thumb, always put these special declarations at the end of your code.
+
 Additionally, if, for some reason, you'd like to program in binary, *on an assembler*, multiple D6 variable declarations work.
 
 The computer lacks a call instruction and a multiplication instruction. While you can achieve these two things through the existing instruction set, it is far too large for my liking. See the plans section at the bottom for how I plan to fix this, and my thoughts on the computer.
