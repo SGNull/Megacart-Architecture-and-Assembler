@@ -1,19 +1,73 @@
 # Megacart Architecture Assembler
 An assembler for my Megacart Architecture's instruction set.
 
-This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. The process went something like this, for those interested:
+This is a project that I have been working on for a while now, and finally I have a computer designed for this architecture. With the computer designed, an assembler was the next logical step. This made it much easier to test the computer, since I didn't have to painstakingly comb through my documentation to translate from mnemonics to machine code. Also, this allows programmers to be more expressive than just simple mnemonics like in other assembly languages. Mnemonics can be anything or any word(s) you want!
 
-Initial Documentation > Hardware Development > Refine Documentation > Hardware Integration > Further Refine Documentation > Phase 1 Testing > Phase 2 Testing > Phase 3 Testing > Finalization
+## Need-to-Know
+The assembler gets the mnemonics from the files in the Mnemonics folder. This folder must be in the same place as the executable. The assembler accepts three different sets of arguments:
+* If you pass it 0 arguments: It will ask for you to specify the target file and the mnemonics folder path.
+* If you pass it 1: It will assume you are passing it the location of the target file, and will look for the Mnemonics folder where the executable is.
+* And for 2: It will assume that you gave it the target file and the Mnemonics folder location, in that order.
 
-Before making this program, I was at phase 3 testing. Here are the testing phases:
-* Phase 1: Try executing a single instruction.
-* Phase 2: Try performing some kind of computation.
-* Phase 3: Actually try running a program on the computer.
+Any other number of arguments will result in an error. It also spits out a variety of errors if the code you type is incorrect. This was a big focus of the program, because the user should be easily able to find the problem if one exists.
 
-This was written before the program was completed:
+If you have a certain way that you want to type something out, that makes better sense in that context than some of the other mnemonic combinations do, you can add some new mnemonics to the files. You can look for the mnemonic that means the same thing and add your new one next to it with the same binary after it. For example, if I wanted to use register 2 for a counter in my program, I would add this to the InternalAddresses.txt file:
+```
+...
 
-Like I said, I'm at stage 3 testing. Right now I have to do all the assembling by myself. This means painstakingly going through the documentation, finding the codes for mnemonics, and replacing them with binary, not to mention all the labels that are being jumped to. I can't do this right away, of course, because I have to have both the source code and the machine code to know what is happening. So, this means having two copies of the program, each individually typed out, along with the spots in memory that they are at. It's just an overall mess.
-So, I've decided to try my hand at building an assembler for it. Recently I just got done with a software engineering class, and a class about languages and automata, so hopefully this turns out OK.
+rg2  110
+reg2 110
+counter 110
+
+...
+```
+
+Though, I'd recommend keeping the binary at a consistant distance from the mnemonics. It doesn't really matter, but it looks nicer.
+
+#### Finally, some stuff you can do:
+```
+//Comments are written like this
+// Or like this
+:LabelsWorkLikeThis
+: OrLikeThis
+```
+
+Jumps to labels work as you'd expect (but remember that jump is always conditional, so at least put a period down)
+
+```JMP . LABEL```
+
+Variables work in these two ways:
+```
+D6 BinaryVariable 011000
+D10 DecimalVariable 23
+```
+
+And work the same way that you're used to. You can read them and write to them through the memory read/write instructions.
+```
+MRD Reg0 BinaryVariable
+MWT Acc DecimalVariable
+```
+
+I think you can even jump to them, but I don't know why you'd want to do that.
+
+Additionally, if, for some reason, you'd like to program in binary, *on an assembler*, multiple D6 variable declarations work.
+
+The computer lacks a call instruction and a multiplication instruction. While you can achieve these two things through the existing instruction set, it is far too large for my liking. See the plans section at the bottom for how I plan to fix this, and my thoughts on the computer.
+
+Function call code:
+```
+D10 six 6
+WTB PC
+MRD A six
+ALU [LOCATION] A+B
+JMP TRUE [FUNCTIONLABEL]
+```
+
+Return from a function call:
+```
+WTB [LOCATION]
+RDB PC
+```
 
 ## Functionality:
 #### We do two passes on the file.
@@ -26,7 +80,6 @@ When it comes across one of these, it stores it along with the programCounter in
 
 #### Variables work a bit differently though.
 Variables will be treated as labels to jump to.
-Now, the following solution (I think) has a certain bad-coding-practices smell to it, but bear with me, as this is the simplest solution I can think of.
 Unlike with every other entry, variables need three pieces of information stored with them: Their name, their value, and then their position in memory.
 I would rather not create a special object that will exclusively be used by variables, just to store one extra piece of data.
 Instead it would be easier to use their position in the table as their position in memory, because this is exactly how it will work.
@@ -41,61 +94,19 @@ If it sees an empty line, or a line starting with : or D6/D10, it ignores it.
 It also ignores spaces in lines.
 Additionally, I've added the ability to make comments, so it also ignores any line like "//Comment" or "// Here's another comment".
 
-#### The final parse through the file will write to a .machinecode.txt file
-For this final parse, I have decided against interpreting the source code at multiple levels (of abstraction).
-My thought process behind this is: If you're using an assembler, why would you want to type at a lower level?
-The only instance where I could see this being useful is with variables, but that does not involve the instructions themselves, and it already allows for this.
-I'm not opposed to doing this because it's a hard problem to solve, I just feel like it would be a waste of my time.
-Also, because I made the program to support nearly every possible mnemonic, you could just add an instruction's value to the mnemonic files as a mnemonic.
-
-## Types of mnemonics:
+#### Types of mnemonics:
 * Instructions
 * ALU Operations
 * Labels
 * Internal Addresses
 * Conditions
 
-## Architecture/Computer details for those interested:
-I created the components from scratch. Some of the designs I borrowed or were influenced by others, and they'll be credited when the build is done.
-* 6-bit CPU, data bus, and registers
-* 6-bit memory addressing
-* Seperate memory reading/writing (but not dual read)
-* 48-byte RAM
-* 8 instructions.
-* 4 two-line instructions, which take 3 clock cycles.
-* 4 one-line instructions, which take 2 clock cycles.
-* The accumulator, or the A register, was originally not meant to be directly written to. However, some of my recent modifications allow this to happen.
-* The temp register, or the B register, can be directly written to.
-* Unknown cycle speed. This is part of finalization.
-* Instructions: Conditional halt, conditional jump, read/write from memory, read/write from temp/B, read from acc/A, ALU operations.
+## Plans and thoughts
+#### The final goal is zero required end-user knowledge
+What I mean by this is: it's the goal of modern computers to make it as easy to pick up and interact with as possible, and this is also my goal. I want it to be extremely easy for someone to do the whole process of loading in the computer, plugging in the RAM, writing code, plugging in the HDD, plugging the numbers into the HDD, and running the program. Right now, the code writing process is at it's peak in terms of ease-of-use and required knowledge (the assembler handles absolutely everything behind the scenes). The same can mostly be said for plugging the numbers in to the HDD, but not so much for loading everything in. It still requires the user to interact with the computer in a way that I'm still not comfortable making people do. I want it to be seemless: load the computer, it's all packaged up, all you have to do is load in the first section and it will take care of the rest. There should be neatly colored ports for RAM, HDD, IO, and for the main user interface (power button, ON light, etc.), and the only thing that's exposed is a section of the hard-drive that the user should write to. This is 100% possible, but requires a big change in the way that the computer itself is saved.
 
-#### Instruction Format:
+#### I noticed that two very important functions are too difficult
+As I was going through some tests, and attempting to write some more example code, I came across an odd challenge that I did not expect to be so difficult: function calls and multiplication. I thought that these would be easy. Branching works fine, and you can read from the program counter. However, if you want to add a multiplication function to your program, this will be taking up a hefty chunk of RAM. Additionally, function calls require you to store where the program counter *should* be when it returns, not where it *is*. This means that you have to use my code, or gain a good enough understanding of the unstruction set to write your own, because it requires knowing the binary line counts for each assembler line of code you write, and where the program counter is upon executing instructions. To solve these two problems...
 
-IsTwoLine?[1-bit] Instruction[2-bit] Operand[3-bit] | OptionalSecondLine[6-bit]
-
-#### ALU operations are performed a bit wierdly.
-First you have to select the ALU instruction (111), then tell it where you want the result to go to in the next 3 bits. Then, the second line contains the opcode, but it's not a normal opcode. 
-The bottom 4-bits of this opcode is the actual code that gets fed into the ALU Decoder to generate the control signals for the ALU. The top two bits control whether A/B is inverted respectively. 
-I chose to do this, because it provided the maximum amount of instructions to the user, without requiring a giant 6-bit decoder.
-
-#### The components:
-
-CPU - Contains A and B registers, and the ALU.
-
-Secondary Controller - Takes the operand and converts it into whatever signals the instruction needs.
-
-ALU Decoder - Takes the code part of the opcode and converts it into control signals for the ALU.
-
-Fetch Registers - Stores the instructions to be executed.
-
-Primary Controller - The main logic of the computer. Contains the state counter, and generates all of the high-level control signals. Is responsible for fetching and executing.
-
-IO - The input/output port of the computer. Has two sets of read/write signals, one coming from the computer, the other going to the computer.
-
-Program Counter - Self explanitory, points to the current instruction's location in memory.
-
-#### I'm planning on adding some sort of hard-drive port.
-This would allow the user to easily punch code into the HDD, then attach the drive to the computer in some way that it would automatically load the data into RAM, then start the program.
-I really want this, so that the most amount of people would be able to use the computer without having to have too much knowledge about how to actually load data into RAM.
-The way that it currently is done is by directly changing the bits on the data bus, and the write address, then sending the write signal to RAM.
-This of course requires knowledge about the inner-workings of the computer, which I don't like.
+#### I'm heavily considering making some IO devices
+Two big ones are going to be a simple device that allows two computers to talk to each other, and an extemely basic networking switch for multiple devices connected to the IO. I have made a big network of interconnected computers in logisim before (from scratch. FYI, logisim is not a fan of having a ton of highly complex IC's running at once) so this should be easy. This would allow for a dedicated multiplication circuit to exist on the IO, along with some sort of function calling circuit (no idea how this would work) and the user interface, and some other stuff like a stack (because I found myself really wanting a stack while writing test code). A network of devices would be very neat, but there's no way I'm doing anything at the scale that I did with the previous project I mentioned.
