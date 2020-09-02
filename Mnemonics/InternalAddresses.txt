@@ -12,12 +12,14 @@ accumulator 010
 a           010
 areg        010
 rega        010
+registera   010
 
-b    011
-breg 011
-tmp  011
-temp 011
-regb 011
+b         011
+breg      011
+tmp       011
+temp      011
+regb      011
+registerb 011
 
 rg0  100
 reg0 100

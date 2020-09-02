@@ -115,7 +115,7 @@ namespace MegacartAssembler
             ParseFileForSpecialLines();
             TranslateCodeToMachineCode();
             WriteVariables();
-            WriteToNewFile();
+            File.WriteAllLines(DestinationFilePath, NewFileLines);
             
             Console.WriteLine("Done!");
         }
@@ -367,11 +367,6 @@ namespace MegacartAssembler
                 AddMachineCodeLineToFile(currentEntryValue);
             }
             
-        }
-
-        public static void WriteToNewFile()
-        {
-            File.WriteAllLines(DestinationFilePath, NewFileLines);
         }
 
         public static string[] SplitLine(string input)

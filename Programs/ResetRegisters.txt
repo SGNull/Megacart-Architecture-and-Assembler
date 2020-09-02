@@ -1,0 +1,16 @@
+//Reset registers program
+//Sets all internal registers to 0
+
+d10 zero 0
+
+LoadVar B zero
+readB A
+
+readB Rg0
+readB Rg1
+readB Rg2
+readB Rg3
+
+readB IO
+
+halt .

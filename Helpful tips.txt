@@ -1,0 +1,41 @@
+Basic function call code:
+
+D10 six 6
+WTB PC
+MRD A six
+ALU [LOCATION] A+B
+JMP TRUE [FUNCTIONLABEL]
+
+
+Return from a basic function call:
+
+WTB [LOCATION]
+RDB PC
+
+
+
+
+Expanded function call code:
+
+NOTE-This is 13 lines of code, as opposed to the 8 lines of code that the basic function call uses. However, each subsequent call uses about 6 lines of code instead of 12.
+
+//Put this code somewhere in your program
+:FunctionCall
+D10 RETURNADDRESS
+D10 DESTINATIONADDRESS
+D10 two 2
+MRD B RETURNADDRESS
+MRD A two
+ALU B A+B
+MWT B RETURNADDRESS
+MRD PC DESTINATIONADDRESS
+
+
+Function call: NOTE-This is unfinished
+
+MWT PC RETURNADDRESS
+JMP TRUE FunctionCall
+
+
+Return from function call:
+MRD PC RETURNADDRESS

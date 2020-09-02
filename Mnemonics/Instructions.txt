@@ -1,23 +1,37 @@
-﻿alu 111
+﻿alu         111
+doop        111
+dooperation 111
+op          111
+operation   111
 
-jif 110
-jmp 110
+jif    110
+jmp    110
+jump   110
+jumpif 110
 
 mwt      101
 mtr      101
+movtoram 101
+movtomem 101
 mtm      101
 memwrite 101
 memwt    101
 ramwt    101
 ramwrite 101
+writevar 101
+storevar 101
 
-mrd     100
-mfr     100
-mfm     100
-memread 100
-ramread 100
-memrd   100
-ramrd   100
+mrd        100
+movfromram 100
+movfrommem 100
+mfr        100
+mfm        100
+memread    100
+ramread    100
+memrd      100
+ramrd      100
+readvar    100
+loadvar    100
 
 mtb    011
 wtb    011
@@ -25,8 +39,10 @@ writeb 011
 mttemp 011
 mttmp  011
 wttmp  011
+movtob 011
 
 mfb      010
+movfromb 010
 rdb      010
 readb    010
 readtmp  010
@@ -41,6 +57,7 @@ reada    001
 readacc  001
 rdacc    001
 movato   001
+movfroma 001
 movaccto 001
 
 end   000
@@ -49,3 +66,4 @@ eif   000
 hif   000
 endif 000
 hltif 000
+halt  000

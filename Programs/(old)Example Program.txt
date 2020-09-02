@@ -1,0 +1,41 @@
+// Example program; Multiplies two numbers
+//Comments!
+
+//Variable declarations!
+d10 decimalVariable 14
+d6 binaryVariable 000100
+
+//Reg0 is the value to add each time
+//Reg1 is the counter
+//Reg2 is the current sum
+
+LoadVar Reg0 decimalVariable
+LoadVar Reg1 binaryVariable
+
+//Clear Register 2
+d10 zero 0
+MRD Reg2 zero
+
+//Jump labels!
+:MultLoop
+	//Setting up addition
+	MOVtoB Reg2
+	MOVBto A
+	MOVtoB Reg0
+	
+	//Do addition (basically Reg0 + Reg2)
+	DoOp Reg2 A+B
+	
+	//Decrement counter
+	MOVtoB Reg1
+	DoOp B B-1
+	MOVBto Reg1
+
+	//Keep going if counter is not 0
+	JumpIf b!=0 MultLoop
+
+//Finally, output the result and stop
+//This, of course, does not work the same on the V2 architecture.
+MOVtoB Reg2
+MOVBto IO
+END .
