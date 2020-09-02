@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
 using System.Text.RegularExpressions;
 
@@ -8,12 +7,13 @@ namespace MegacartAssembler
 {
     class Assembler
     {
-        public static int ProgramCounter;
-        public static int EndOfMemory = 63;
-        public static int CodeEndsHere;
+        public static int ProgramCounter; //Used during the passes
+        public static int EndOfHardDriveMemory = 63; //Useful for new architectural changes! HDD size is not necessarily the same size as RAM
+        public static int CodeEndsHere; //Is important for generating variable pointers.
+        public static int NumberOfMachineCodeLines; //Used when writing to file
 
-        public static string TargetFilePath;
-        public static string DestinationFilePath;
+        public static string TargetFilePath; //This is the file to parse
+        public static string DestinationFilePath; // This is the new .machinecode.txt file's path
 
         public static string ALUOperationsFilePath;
         public static string InstructionsFilePath;
@@ -31,7 +31,7 @@ namespace MegacartAssembler
         public static Regex CommentPattern = new Regex("^//[\\S]*$");
         public static Regex Binary = new Regex("^[0||1]+$");
 
-        public static List<string> NewFileLines = new List<string>();
+        public static List<string> NewFileLines = new List<string>(); //Where the file's lines are stored before writing them to the file.
 
         public static void Main(String[] args)
         {
@@ -244,14 +244,14 @@ namespace MegacartAssembler
                             if(LabelTable.HasEntryWithKeyword(lineParts[2])){
                                 value = null;
                                 StopWithErrorMessage("The label '" + lineParts[2] + "' is not before this in the code. Make sure this variable declaration is at the end!");
+                                //Note: a solution to this is parsing for labels, then parsing for variables. However, this would add an additional pass to the assembling process.
+                                //      I have decided against this, but I am open to changing my mind in the future if this proves to be too difficult to work with.
                             }
                             value = LabelTable.GetValueForKeyword(lineParts[2]);
                         }
 
                         TableEntry newVariableEntry = new TableEntry(variable, value, true);
                         VariableTable.AddEntry(newVariableEntry);
-
-                        EndOfMemory--;
                     } 
                     else if (lineParts.Length == 3)
                     {
@@ -273,8 +273,8 @@ namespace MegacartAssembler
             string[] fileLines = File.ReadAllLines(TargetFilePath);
             ProgramCounter = 0;
 
-            NewFileLines.Add("ADRESS:  DATA");
-            NewFileLines.Add("------- ------");
+            NewFileLines.Add(" DATA");
+            NewFileLines.Add("------");
 
             foreach (string line in fileLines)
             {
@@ -346,25 +346,12 @@ namespace MegacartAssembler
                             operand = GetOperandFromTable(InternalAddressesTable, line);
                     }
 
-                    string machineCodeLine1 = IntToBinaryLine(ProgramCounter) + ": " + instructionValue + operand;
-                    NewFileLines.Add(machineCodeLine1);
-                    ProgramCounter++;
-
-                    if (ProgramCounter > EndOfMemory)
-                    {
-                        StopWithErrorMessage("Code is too large to assemble. This could be due to a large number of variables declared.");
-                    }
+                    string machineCodeLine1 = instructionValue + operand;
+                    AddMachineCodeLineToFile(machineCodeLine1);
 
                     if (isTwoLine)
                     {
-                        string machineCodeLine2 = IntToBinaryLine(ProgramCounter) + ": " + secondary;
-                        NewFileLines.Add(machineCodeLine2);
-                        ProgramCounter++;
-                    }
-
-                    if (ProgramCounter > EndOfMemory)
-                    {
-                        StopWithErrorMessage("Code is too large to assemble. This could be due to a large number of variables declared.");
+                        AddMachineCodeLineToFile(secondary);
                     }
                 }
             }
@@ -372,19 +359,14 @@ namespace MegacartAssembler
 
         public static void WriteVariables()
         {
-            if (EndOfMemory != 63){
-                List<TableEntry> variableTable = VariableTable.Table;
+            List<TableEntry> variableTable = VariableTable.Table;
 
-                for (int index = 0; index < variableTable.Count; index++)
-                {
-                    string currentEntryValue = variableTable[index].Value;
-                    int memoryAddress = CodeEndsHere + index;
-                    string memoryAddressBinary = IntToBinaryLine(memoryAddress);
-
-                    string machineCodeLine = memoryAddressBinary + ": " + currentEntryValue;
-                    NewFileLines.Add(machineCodeLine);
-                }
+            for (int index = 0; index < variableTable.Count; index++)
+            {
+                string currentEntryValue = variableTable[index].Value;
+                AddMachineCodeLineToFile(currentEntryValue);
             }
+            
         }
 
         public static void WriteToNewFile()
@@ -511,6 +493,7 @@ namespace MegacartAssembler
 
             else if (VariableTable.HasEntryWithKeyword(targetLinePart))
             {
+                //What it's doing here is generating the pointer for the variable. Since it occurs in the memory at index + CodeEndsHere, it uses that as the pointer.
                 int index = VariableTable.GetPositionOfKeyword(targetLinePart);
                 int outputInt = CodeEndsHere + index;
                 output = IntToBinaryLine(outputInt);
@@ -530,6 +513,16 @@ namespace MegacartAssembler
             Console.WriteLine("Press any key to exit...");
             Console.ReadKey();
             Environment.Exit(0);
+        }
+    
+        public static void AddMachineCodeLineToFile(string line){
+            NewFileLines.Add(line);
+            NumberOfMachineCodeLines++;
+
+            if (NumberOfMachineCodeLines > EndOfHardDriveMemory)
+            {
+                StopWithErrorMessage("Code is too large to assemble. This could be due to a large number of variables declared.");
+            }
         }
     }
 }
