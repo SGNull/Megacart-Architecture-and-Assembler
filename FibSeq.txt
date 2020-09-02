@@ -1,4 +1,5 @@
 //Fibbonacci sequence generator program!
+//IMPORTANT NOTE: This program is written for the V1 Architecture. This will not work in the V2 architecture.
 
 //First, let's load 1 into A, 0 into B
 ALU A 1
