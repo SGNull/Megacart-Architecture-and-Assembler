@@ -55,7 +55,6 @@ namespace MegacartAssembler
 
                 TargetFilePath = Path.GetFullPath(args[0]);
                 mnemonicsPath = localDirectory + "\\Mnemonics";
-
             }
             else if (args.Length == 2)
             {
@@ -113,7 +112,7 @@ namespace MegacartAssembler
             //Run the assembler
             PopulateMnemonicTables();
             ParseFileForSpecialLines();
-            TranslateCodeToMachineCode();
+            DoAssembling();
             WriteVariables();
             File.WriteAllLines(DestinationFilePath, NewFileLines);
             
@@ -268,13 +267,12 @@ namespace MegacartAssembler
             CodeEndsHere = ProgramCounter;
         }
 
-        public static void TranslateCodeToMachineCode()
+        public static void DoAssembling()
         {
             string[] fileLines = File.ReadAllLines(TargetFilePath);
-            ProgramCounter = 0;
 
-            NewFileLines.Add(" DATA");
-            NewFileLines.Add("------");
+            NewFileLines.Add("#   DATA");
+            NewFileLines.Add("-- ------");
 
             foreach (string line in fileLines)
             {
@@ -334,7 +332,8 @@ namespace MegacartAssembler
                             secondary = GetAddressFromLine(line);
                         }
                     }
-                    else {
+                    else 
+                    {
                         if(lineParts.Length != 2)
                         {
                             StopWithErrorMessage("Wrong number of arguments at line: '" + line + "'");
@@ -448,11 +447,8 @@ namespace MegacartAssembler
 
         public static bool LineIsVariable(string[] lineParts)
         {
-            if (lineParts[0].ToLower() == "d6")
-                return true;
-            if (lineParts[0].ToLower() == "d10")
-                return true;
-            if (lineParts[0].ToLower() == "dl")
+            string firstPart = lineParts[0].ToLower();
+            if (firstPart == "d6" || firstPart == "d10" || firstPart == "dl")
                 return true;
             return false;
         }
@@ -510,8 +506,17 @@ namespace MegacartAssembler
             Environment.Exit(0);
         }
     
-        public static void AddMachineCodeLineToFile(string line){
-            NewFileLines.Add(line);
+        public static void AddMachineCodeLineToFile(string line)
+        {
+            string space;
+            if(NumberOfMachineCodeLines < 10)
+                space = "  ";
+            else
+                space = " ";
+
+            string newLine = NumberOfMachineCodeLines + space + line;
+
+            NewFileLines.Add(newLine);
             NumberOfMachineCodeLines++;
 
             if (NumberOfMachineCodeLines > EndOfHardDriveMemory)
