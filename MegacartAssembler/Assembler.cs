@@ -8,7 +8,7 @@ namespace MegacartAssembler
     class Assembler
     {
         public static int ProgramCounter; //Used during the passes
-        public static int EndOfHardDriveMemory = 63; //Useful for new architectural changes! HDD size is not necessarily the same size as RAM
+        public static int EndOfHardDriveMemory = 64; //Useful for new architectural changes! HDD size is not necessarily the same size as RAM
         public static int CodeEndsHere; //Is important for generating variable pointers.
         public static int NumberOfMachineCodeLines; //Used when writing to file
 
@@ -316,25 +316,31 @@ namespace MegacartAssembler
                 string[] lineParts = SplitLine(line);
                 bool isCode = !(LineIsIgnorable(lineParts) || LineIsVariable(lineParts) || LineIsLabel(lineParts));
 
-                if (isCode && isFirstLine)
+                if (isFirstLine && isCode)
                 {
                     isFirstLine = false;
                     bool isCorrect = "RAMSlot" == lineParts[0] || "RAM" == lineParts[0];
                     if (!isCorrect)
                         StopWithErrorMessage("RAM Slot not defined at beginning of code.");
-                    
+
+                    string RAMNumber;
                     if(lineParts.Length == 2)
-                    {
-
-                    } 
+                        RAMNumber = lineParts[1];
                     else if (lineParts.Length == 3)
-                    {
-
-                    }
+                        RAMNumber = lineParts[2];
                     else
                     {
+                        RAMNumber = null;
                         StopWithErrorMessage("Bad RAM slot declaration. Follow this format: 'RAM = [RAM slot # 0/3]'");
                     }
+                    
+                    int RAMNumberAsInt = Int32.Parse(RAMNumber);
+                    if (!(RAMNumberAsInt >=0 && RAMNumberAsInt < 4))
+                    {
+                        StopWithErrorMessage("Incorrect RAM slot. RAM slots are numbered 0,1,2 and 3");
+                    }
+                    string RAMLine = IntToBinaryLine(RAMNumberAsInt);
+                    AddMachineCodeLineToFile(RAMLine);
                 }
                 else if (isCode)
                 {
