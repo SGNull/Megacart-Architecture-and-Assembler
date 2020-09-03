@@ -274,12 +274,35 @@ namespace MegacartAssembler
             NewFileLines.Add("#   DATA");
             NewFileLines.Add("-- ------");
 
+            //This I had to do, because I need to locate the first code line of the program, not the first actual line.
+            bool isFirstLine = true;
+
             foreach (string line in fileLines)
             {
                 string[] lineParts = SplitLine(line);
                 bool isCode = !(LineIsIgnorable(lineParts) || LineIsVariable(lineParts) || LineIsLabel(lineParts));
 
-                if (isCode)
+                if (isCode && isFirstLine)
+                {
+                    isFirstLine = false;
+                    bool isCorrect = "RAMSlot" == lineParts[0] || "RAM" == lineParts[0];
+                    if (!isCorrect)
+                        StopWithErrorMessage("RAM Slot not defined at beginning of code.");
+                    
+                    if(lineParts.Length == 2)
+                    {
+
+                    } 
+                    else if (lineParts.Length == 3)
+                    {
+
+                    }
+                    else
+                    {
+                        StopWithErrorMessage("Bad RAM slot declaration. Follow this format: 'RAM = [RAM slot # 0/3]'");
+                    }
+                }
+                else if (isCode)
                 {
                     string instruction = lineParts[0].ToLower();
                     string instructionValue;
