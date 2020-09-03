@@ -15,6 +15,7 @@ namespace MegacartAssembler
         public static string TargetFilePath; //This is the file to parse
         public static string DestinationFilePath; // This is the new .machinecode.txt file's path
 
+        public static string MnemonicsPath;
         public static string ALUOperationsFilePath;
         public static string InstructionsFilePath;
         public static string ConditionsFilePath;
@@ -35,16 +36,45 @@ namespace MegacartAssembler
 
         public static void Main(String[] args)
         {
-            string mnemonicsPath;
-
             if (args.Length == 0)
             {
-                //Prompt the user for arguments
-                Console.WriteLine("Please input the mnemonics folder file path");
-                mnemonicsPath = Console.ReadLine();
+                Console.WriteLine(
+                    "Assuming Assembler.exe is in the same location as the Mnemonics and Programs folder, is this correct? yes/no?");
+                
+                while (true){
+                    string userInput = Console.ReadLine().ToLower();
 
-                Console.WriteLine("Please input the source code file path (the file to be assembled):");
-                TargetFilePath = Console.ReadLine();
+                    if (userInput == "yes" || userInput == "y")
+                    {
+                        //Code from https://stackoverflow.com/questions/837488/how-can-i-get-the-applications-path-in-a-net-console-application
+                        string directory = System.Reflection.Assembly.GetExecutingAssembly().CodeBase;
+                        string localDirectory = Path.GetDirectoryName(new Uri(directory).LocalPath);
+                        
+                        MnemonicsPath = localDirectory + "\\Mnemonics";
+
+                        Console.WriteLine("Enter the name of your program.");
+                        string programName = Console.ReadLine();
+                        
+                        TargetFilePath = localDirectory + "\\Programs\\" + programName + ".txt";
+                        
+                        break;
+                    }
+                    else if (userInput == "no" || userInput == "n")
+                    {
+                        //Prompt the user for arguments
+                        Console.WriteLine("Please input the mnemonics folder file path");
+                        MnemonicsPath = Console.ReadLine();
+
+                        Console.WriteLine("Please input the source code file path (the file to be assembled):");
+                        TargetFilePath = Console.ReadLine();
+
+                        break;
+                    }
+                    else
+                    {
+                        Console.WriteLine("Invalid input, type 'yes' or 'no'");
+                    }
+                }
             }
             else if (args.Length == 1)
             {
@@ -54,56 +84,21 @@ namespace MegacartAssembler
                 string localDirectory = Path.GetDirectoryName(new Uri(directory).LocalPath);
 
                 TargetFilePath = Path.GetFullPath(args[0]);
-                mnemonicsPath = localDirectory + "\\Mnemonics";
+                MnemonicsPath = localDirectory + "\\Mnemonics";
             }
             else if (args.Length == 2)
             {
                 //Target and Mnemonics
                 TargetFilePath = args[0];
-                mnemonicsPath = args[1];
+                MnemonicsPath = args[1];
             }
             else
             {
-                mnemonicsPath = null; //I do this throughout the code, because ReSharper doesn't seem to understand that Environment.Exit(0) stops the program.
+                MnemonicsPath = null; //I do this throughout the code, because ReSharper doesn't seem to understand that Environment.Exit(0) stops the program.
                 StopWithErrorMessage("Bad number of arguments passed to the assembler.");
             }
 
-            //Check if files exist
-            if (!Directory.Exists(mnemonicsPath))
-            {
-                StopWithErrorMessage(
-                    "The mnemonics folder does not exist. It should be where the assembler is.");
-            }
-            
-            ALUOperationsFilePath = mnemonicsPath + "\\ALUOperations.txt";
-            if (!File.Exists(ALUOperationsFilePath))
-            {
-                StopWithErrorMessage(
-                    "ALU Operations mnemonics file does not exist.");
-            }
-
-            InstructionsFilePath = mnemonicsPath + "\\Instructions.txt";
-            if (!File.Exists(InstructionsFilePath))
-            {
-                StopWithErrorMessage("Instructions mnemonics file does not exist");
-            }
-
-            ConditionsFilePath = mnemonicsPath + "\\Conditions.txt";
-            if (!File.Exists(ConditionsFilePath))
-            {
-                StopWithErrorMessage("Conditions mnemonics file does not exist.");
-            }
-
-            InternalAddressesFilePath = mnemonicsPath + "\\InternalAddresses.txt";
-            if (!File.Exists(InternalAddressesFilePath))
-            {
-                StopWithErrorMessage("Internal Addresses mnemonics file does not exist.");
-            }
-
-            if (!File.Exists(TargetFilePath))
-            {
-                StopWithErrorMessage("Source code file does not exist.");
-            }
+            CheckIfFilesExist();
 
             Regex period = new Regex(@"\.txt");
             string pathNoFileExtension = period.Split(TargetFilePath)[0];
@@ -119,6 +114,45 @@ namespace MegacartAssembler
             Console.WriteLine("Done!");
         }
 
+        public static void CheckIfFilesExist()
+        {
+            if (!Directory.Exists(MnemonicsPath))
+            {
+                StopWithErrorMessage(
+                    "The mnemonics folder does not exist. It should be where the assembler is.");
+            }
+            
+            ALUOperationsFilePath = MnemonicsPath + "\\ALUOperations.txt";
+            if (!File.Exists(ALUOperationsFilePath))
+            {
+                StopWithErrorMessage(
+                    "ALU Operations mnemonics file does not exist.");
+            }
+
+            InstructionsFilePath = MnemonicsPath + "\\Instructions.txt";
+            if (!File.Exists(InstructionsFilePath))
+            {
+                StopWithErrorMessage("Instructions mnemonics file does not exist");
+            }
+
+            ConditionsFilePath = MnemonicsPath + "\\Conditions.txt";
+            if (!File.Exists(ConditionsFilePath))
+            {
+                StopWithErrorMessage("Conditions mnemonics file does not exist.");
+            }
+
+            InternalAddressesFilePath = MnemonicsPath + "\\InternalAddresses.txt";
+            if (!File.Exists(InternalAddressesFilePath))
+            {
+                StopWithErrorMessage("Internal Addresses mnemonics file does not exist.");
+            }
+
+            if (!File.Exists(TargetFilePath))
+            {
+                StopWithErrorMessage("Source code file does not exist.");
+            }
+        } 
+        
         public static void PopulateMnemonicTables()
         {
             LookupTable[] tables = new LookupTable[]
