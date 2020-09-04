@@ -5,13 +5,22 @@ This is a project that I have been working on for a while now, and finally I hav
 
 ## Need-to-Know
 The assembler gets the mnemonics from the files in the Mnemonics folder. This folder must be in the same place as the executable. The assembler accepts three different sets of arguments:
-* If you pass it 0 arguments: It will ask for you to specify the target file and the mnemonics folder path.
+* If you pass it 0 arguments: It asks if you haven't moved the Mnemonics and Programs folder, and if your program is in there. If either of these is not true, it asks for the Mnemonics folder and source code file's location.
 * If you pass it 1: It will assume you are passing it the location of the target file, and will look for the Mnemonics folder where the executable is.
 * And for 2: It will assume that you gave it the target file and the Mnemonics folder location, in that order.
 
 Any other number of arguments will result in an error. It also spits out a variety of errors if the code you type is incorrect. This was a big focus of the program, because the user should be easily able to find the problem if one exists.
 
-If you have a certain way that you want to type something out, that makes better sense in that context than some of the other mnemonic combinations do, you can add some new mnemonics to the files. You can look for the mnemonic that means the same thing and add your new one next to it with the same binary after it. For example, if I wanted to use register 2 for a counter in my program, I would add this to the InternalAddresses.txt file:
+The new V2 architecture requires that you begin the code with the RAM slot # you're running the code in. This is because the V2 architecture supports multiple RAM slots. If you are just testing one program, it's recommended to use RAM slot 0. Examples:
+```
+RAMSlot 0
+RAM 3
+RAM = 2
+RAMSlot = 2
+```
+I allow multiple types of RAM slot declarations, not for any important reason, but because expressiveness is something that should not be overlooked. Even though there's really no difference, it follows with the design philosophy of the rest of the assembler.
+
+If you have a certain way that you want to type something out, that makes better sense in that context than some of the other mnemonic combinations do, you can add some new mnemonics to the files. You can look for the mnemonic that means the same thing and add your new one next to it, just make sure that your addition is followed by the same binary number as the mnemonics around it. For example, if I wanted to use register 2 for a counter in my program, I would add this to the InternalAddresses.txt file:
 ```
 ...
 
@@ -57,23 +66,6 @@ DL MyLabelValue MYLABEL
 This was added in as a result of some new architecture changes. Sometimes I found myself wanting the raw value of a label for certain things, so I added this in. It works a bit odd though. You must put it after the label in question. So, as a rule of thumb, always put these special declarations at the end of your code.
 
 Additionally, if, for some reason, you'd like to program in binary, *on an assembler*, multiple D6 variable declarations work.
-
-The computer lacks a call instruction and a multiplication instruction. While you can achieve these two things through the existing instruction set, it is far too large for my liking. See the plans section at the bottom for how I plan to fix this, and my thoughts on the computer.
-
-Function call code:
-```
-D10 six 6
-WTB PC
-MRD A six
-ALU [LOCATION] A+B
-JMP TRUE [FUNCTIONLABEL]
-```
-
-Return from a function call:
-```
-WTB [LOCATION]
-RDB PC
-```
 
 ## Functionality:
 #### We do two passes on the file.
